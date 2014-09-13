@@ -1,0 +1,14 @@
+{
+  "name": "sectir_table",
+  "version": "0.0.0",
+  "description": "A nested table directive for angularjs",
+  "main": "module/module.coffee",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "author": "Asdrúbal Suarez <asdrubal.ivan.suarez.rivera@gmail.com>",
+  "license": "MIT"
+}

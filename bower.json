@@ -1,0 +1,23 @@
+{
+  "name": "sectir_table",
+  "version": "0.0.0",
+  "authors": [
+    "Asdrúbal Iván Suárez Rivera <asdrubal.ivan.suarez.rivera@gmail.com>",
+    "Jesús Jerez Moreno <jerezmoreno@gmail.com>"
+  ],
+  "description": "A nested table directive",
+  "main": "index.html",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.24"
+
+  }
+}
