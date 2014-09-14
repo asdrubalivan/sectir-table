@@ -3,8 +3,26 @@ angular.module 'sectirTableModule.treeFactory', []
         new class SectirTreeFactory
             constructor: ->
                 @trees = {}
+            reset: ->
+                @trees = {}
             addTree: (tree, namespace="default") ->
                 treeM = new TreeModel
                 @trees[namespace] = treeM.parse tree
                 return
-            
+            getTreeHeight: (namespace="default") ->
+                retVal = 0
+                @trees[namespace].walk (node) ->
+                    level = node.getPath().length
+                    if level > retVal
+                        retVal = level
+                    return
+                retVal
+            getNodeHeightById: (id, namespace="default") ->
+                id = String id
+                retVal = false
+                @trees[namespace].walk (node) ->
+                    modelId = String node.model.id
+                    if modelId is id
+                        retVal = node.getPath().length
+                        return false
+                retVal
