@@ -9,7 +9,7 @@ describe 'sectirTable', ->
         @$compile = $compile
     ))
 
-    it 'should contain 1 header row', ->
+    it 'should contain 1 header row when only one element is provided', ->
         @$scope.tabledata =
             name: "Header"
         elm = angular.element '''

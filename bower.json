@@ -17,7 +17,8 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.2.24"
+    "angular": "~1.2.24",
+    "tree-model-bower" : "git://github.com/bikezilla/tree-model-bower"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.24"

@@ -1,4 +1,4 @@
-angular.module('sectirTableModule.table', [])
+angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
     .directive 'sectirTable', ->
         {
             restrict: "EA"
