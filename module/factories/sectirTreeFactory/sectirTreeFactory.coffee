@@ -26,3 +26,12 @@ angular.module 'sectirTableModule.treeFactory', []
                         retVal = node.getPath().length
                         return false
                 retVal
+            hasChildren: (node) ->
+                node.children? and node.children.length > 0
+            getLeafs: (namespace="default") ->
+                strategy =
+                    strategy: 'breadth'
+                self = @
+                retVal = @trees[namespace].all strategy, (node) ->
+                    not self.hasChildren node
+                retVal
