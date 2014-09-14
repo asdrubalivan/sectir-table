@@ -19,6 +19,11 @@
     "karma-firefox-launcher": "~0.1.3",
     "karma-phantomjs-launcher": "~0.1.4",
     "karma-coffee-preprocessor": "~0.2.1",
-    "karma-spec-reporter": "0.0.13"
+    "karma-spec-reporter": "0.0.13",
+    "grunt-cli": "~0.1.13",
+    "grunt": "~0.4.5",
+    "grunt-karma": "~0.9.0",
+    "coffeelint": "~1.6.0",
+    "grunt-coffeelint": "0.0.13"
   }
 }

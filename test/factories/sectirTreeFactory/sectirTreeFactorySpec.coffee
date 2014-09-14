@@ -106,9 +106,9 @@ describe 'sectirTreeFactory', ->
             }
         treeWithEmptyChildren =
             {
-                 id: 3
-                 children:
-                     []
+                id: 3
+                children:
+                    []
             }
         treeM = new TreeModel
         node = treeM.parse treeWithoutChildren
