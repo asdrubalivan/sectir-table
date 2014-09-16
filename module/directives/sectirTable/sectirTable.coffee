@@ -19,6 +19,8 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                             scope.titleField
                         else
                             "name"
+                    table = angular.element "<table>"
+                    table.addClass "sectir-table"
                     firstRow = true
                     trRows = []
                     for row in rows
@@ -49,6 +51,7 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                             tr.append val
                         trRows.push tr
                     for val in trRows
-                        element.append val
+                        table.append val
+                    element.append table
             }
     ]
