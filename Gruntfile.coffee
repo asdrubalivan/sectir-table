@@ -11,8 +11,13 @@ module.exports = (grunt) ->
                         'test/**/*.coffee']
                 options:
                     configFile: 'coffeelint.json'
+        coffee:
+            compile:
+                files:
+                    "build/script.js": ["module/**/*.coffee"]
                 
     grunt.loadNpmTasks 'grunt-karma'
     grunt.loadNpmTasks 'grunt-coffeelint'
+    grunt.loadNpmTasks 'grunt-contrib-coffee'
 
-    grunt.registerTask 'default', ['coffeelint','karma']
+    grunt.registerTask 'default', ['coffeelint','karma', "coffee"]
