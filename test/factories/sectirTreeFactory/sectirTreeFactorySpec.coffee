@@ -5,6 +5,11 @@ describe 'sectirTreeFactory', ->
     beforeEach(inject( (_sectirTreeFactory_)->
         sectirTreeFactory = _sectirTreeFactory_
     ))
+    
+    #Helper function
+    leafsIds = (nodes) ->
+        (val.model.id for val in nodes)
+
 
     it 'should has its "trees" property empty when constructed', ->
         expect(Object.keys(sectirTreeFactory.trees).length).toBe(0)
@@ -84,6 +89,15 @@ describe 'sectirTreeFactory', ->
         expect(sectirTreeFactory.getNodeHeightById(4)).toBe(3)
         expect(sectirTreeFactory.getNodeHeightById("otherName")).toBe(false)
         expect(sectirTreeFactory.getNodeHeightById(1)).toBe(1)
+ 
+        sectirTreeFactory.addTree treeVar, "other"
+        expect(sectirTreeFactory.getNodeHeightById(2, "other")).toBe(2)
+        expect(sectirTreeFactory.getNodeHeightById("2", "other")).toBe(2)
+        expect(sectirTreeFactory.getNodeHeightById(4, "other")).toBe(3)
+        expect(sectirTreeFactory.getNodeHeightById("otherName",
+            "other")).toBe(false)
+        expect(sectirTreeFactory.getNodeHeightById(1, "other")).toBe(1)
+
 
 
     it 'should have a function to know if a node has children', ->
@@ -119,9 +133,6 @@ describe 'sectirTreeFactory', ->
         expect(sectirTreeFactory.hasChildren(node)).toBe(false)
 
     it 'should get leaf of a tree correctly', ->
-        #Helper function
-        leafsIds = (nodes) ->
-            (val.model.id for val in nodes)
         testLeaf = (obj, equalTo) ->
             sectirTreeFactory.addTree obj
             nodes = sectirTreeFactory.getLeafs()
@@ -172,3 +183,72 @@ describe 'sectirTreeFactory', ->
         testLeaf treeWithoutChildren, [1]
         testLeaf treeWithTwoRows, [2, 3]
         testLeaf treeWithThreeRows, [2, 4, 5, 6]
+    
+    it 'should return all rows of a tree', ->
+        testRows = (obj, equalTo) ->
+            sectirTreeFactory.addTree obj
+            nodes = sectirTreeFactory.getRows()
+            idNodes = (leafsIds node for node in nodes)
+            expect(idNodes).toEqual(equalTo)
+        treeWithOneRow =
+            id: 4
+        treeWithTwoRows =
+            id: 5
+            children:
+                [
+                    {
+                        id: 6
+                    }
+                    {
+                        id: 7
+                    }
+                    {
+                        id: 8
+                    }
+                ]
+        treeWithThreeRows =
+            id: 10
+            children:
+                [
+                    {
+                        id: 11
+                    }
+                    {
+                        id: 12
+                        children:
+                            [
+                                {
+                                    id: 13
+                                }
+                                {
+                                    id: 14
+                                }
+                            ]
+                    }
+                    {
+                        id: 15
+                    }
+                    {
+                        id: 16
+                        children:
+                            [
+                                {
+                                    id: 17
+                                }
+                                {
+                                    id: 18
+                                }
+                                {
+                                    id: 19
+                                }
+                            ]
+                    }
+                ]
+        testRows treeWithOneRow, [[4]]
+        testRows treeWithTwoRows, [[5], [6, 7, 8]]
+        testRows treeWithThreeRows, [
+            [10]
+            [11, 12, 15, 16]
+            [13, 14, 17, 18, 19]
+        ]
+

@@ -18,12 +18,18 @@ angular.module 'sectirTableModule.treeFactory', []
                     return
                 retVal
             getNodeHeightById: (id, namespace="default") ->
+                val = @getNodeById id, namespace
+                if val
+                    val.getPath().length
+                else
+                    false
+            getNodeById: (id, namespace="default") ->
                 id = String id
                 retVal = false
                 @trees[namespace].walk (node) ->
                     modelId = String node.model.id
                     if modelId is id
-                        retVal = node.getPath().length
+                        retVal = node
                         return false
                 retVal
             hasChildren: (node) ->
@@ -34,4 +40,19 @@ angular.module 'sectirTableModule.treeFactory', []
                 self = @
                 retVal = @trees[namespace].all strategy, (node) ->
                     not self.hasChildren node
+                retVal
+            getRows: (namespace="default") ->
+                strategy =
+                    strategy: 'breadth'
+                retVal = []
+                curLevel = -1 #Empezamos con -1 ya que el nivel menor es 0
+                self = @
+                @trees[namespace].walk strategy, (node) ->
+                    nodeHeight =
+                        self.getNodeHeightById node.model.id, namespace
+                    if nodeHeight isnt curLevel #Nivel ha cambiado
+                        retVal.push []
+                        curLevel = nodeHeight
+                    retVal[curLevel - 1].push node
+                    return
                 retVal
