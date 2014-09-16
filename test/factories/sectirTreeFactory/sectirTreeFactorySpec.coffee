@@ -11,8 +11,9 @@ describe 'sectirTreeFactory', ->
         (val.model.id for val in nodes)
 
 
-    it 'should has its "trees" property empty when constructed', ->
+    it 'should has its properties empty when constructed', ->
         expect(Object.keys(sectirTreeFactory.trees).length).toBe(0)
+        expect(Object.keys(sectirTreeFactory.maxHeights).length).toBe(0)
 
     it 'should reset its values when function reset is called', ->
         myTree =
@@ -21,6 +22,7 @@ describe 'sectirTreeFactory', ->
         expect(sectirTreeFactory.getTreeHeight()).toBe(1)
         sectirTreeFactory.reset()
         expect(Object.keys(sectirTreeFactory.trees).length).toBe(0)
+        expect(Object.keys(sectirTreeFactory.maxHeights).length).toBe(0)
 
     it 'should get the correct height of a "tree property"', ->
         treeVar1 =
@@ -183,6 +185,7 @@ describe 'sectirTreeFactory', ->
         testLeaf treeWithoutChildren, [1]
         testLeaf treeWithTwoRows, [2, 3]
         testLeaf treeWithThreeRows, [2, 4, 5, 6]
+        expect(sectirTreeFactory.getLeafs("non-existent")).toBe(false)
     
     it 'should return all rows of a tree', ->
         testRows = (obj, equalTo) ->
@@ -251,4 +254,93 @@ describe 'sectirTreeFactory', ->
             [11, 12, 15, 16]
             [13, 14, 17, 18, 19]
         ]
+    
+    it 'should return a correct node level', ->
+        treeVar1 =
+            id: 2
+            children:
+                [
+                    {
+                        id: 3
+                    }
+                    {
+                        id: 4
+                    }
+                    {
+                        id: 5
+                        children:
+                            [
+                                {
+                                    id: 6
+                                }
+                            ]
+                    }
+                ]
+        sectirTreeFactory.addTree treeVar1
+        expect(sectirTreeFactory.getNodeLevelsFromMax(3)).toBe(1)
+        expect(sectirTreeFactory.getNodeLevelsFromMax(2)).toBe(2)
+        expect(sectirTreeFactory.getNodeLevelsFromMax(4)).toBe(1)
+        expect(sectirTreeFactory.getNodeLevelsFromMax(5)).toBe(1)
+        expect(sectirTreeFactory.getNodeLevelsFromMax(6)).toBe(0)
+        expect(sectirTreeFactory.getNodeLevelsFromMax(6,"other")).toBe(false)
+        expect(sectirTreeFactory.getNodeLevelsFromMax(null)).toBe(false)
+        expect(sectirTreeFactory.getNodeLevelsFromMax("other")).toBe(false)
 
+
+    it 'should return correct number of leafs', ->
+        tree =
+            id: 1
+            children:
+                [
+                    {
+                        id: 2
+                        children:
+                            [
+                                {
+                                    id: 3
+                                }
+                                {
+                                    id: 4
+                                    children:
+                                        [
+                                            {
+                                                id: 5
+                                            }
+                                        ]
+                                }
+                                {
+                                    id: 6
+                                }
+                                {
+                                    id: 7
+                                }
+                                {
+                                    id: 8
+                                    children:
+                                        [
+                                            {
+                                                id: 9
+                                            }
+                                            {
+                                                id: 10
+                                            }
+                                        ]
+                                }
+                            ]
+                    }
+                ]
+        sectirTreeFactory.addTree tree
+        expect(sectirTreeFactory.getNumberLeafsFromNode(1)).toBe(6)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(2)).toBe(6)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(3)).toBe(1)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(4)).toBe(1)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(5)).toBe(1)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(6)).toBe(1)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(7)).toBe(1)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(8)).toBe(2)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(9)).toBe(1)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(10)).toBe(1)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(11)).toBe(false)
+        expect(sectirTreeFactory.getNumberLeafsFromNode(10, "other"))
+            .toBe(false)
+        

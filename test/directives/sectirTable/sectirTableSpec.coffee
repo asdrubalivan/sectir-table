@@ -1,4 +1,4 @@
-describe 'sectirTable', ->
+xdescribe 'sectirTable', ->
     @$scope = undefined
     @$compile = undefined
 
