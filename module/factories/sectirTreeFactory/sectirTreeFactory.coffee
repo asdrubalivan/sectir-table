@@ -10,6 +10,7 @@ angular.module 'sectirTableModule.treeFactory', []
             addTree: (tree, namespace="default") ->
                 treeM = new TreeModel
                 @trees[namespace] = treeM.parse tree
+                @maxHeights[namespace] = undefined
                 return
             getTreeHeight: (namespace="default") ->
                 if @maxHeights[namespace]?

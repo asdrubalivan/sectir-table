@@ -14,7 +14,6 @@ describe 'sectirTreeFactory', ->
     it 'should has its properties empty when constructed', ->
         expect(Object.keys(sectirTreeFactory.trees).length).toBe(0)
         expect(Object.keys(sectirTreeFactory.maxHeights).length).toBe(0)
-
     it 'should reset its values when function reset is called', ->
         myTree =
             id: 3
@@ -62,7 +61,11 @@ describe 'sectirTreeFactory', ->
             }
         sectirTreeFactory.addTree treeVar2, "namespace2"
         expect(sectirTreeFactory.getTreeHeight("namespace2")).toBe(3)
-
+        
+        #Testeamos treeVar2 en el namespace de treeVar1
+        #para evitar error de cacheo
+        sectirTreeFactory.addTree treeVar2
+        expect(sectirTreeFactory.getTreeHeight()).toBe(3)
 
     it 'should get the correct node height by id', ->
         treeVar =
