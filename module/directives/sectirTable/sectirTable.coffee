@@ -34,10 +34,16 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                             elm.attr "colspan",
                                 sectirTreeFactory.getNumberLeafsFromNode(
                                     field.model.id, scope.namespace)
-                            elm.attr "rowspan",
-                                (sectirTreeFactory.
+                            rowspan = do ->
+                                hasChildren = sectirTreeFactory.
+                                    hasChildrenById field.model.id
+                                if not hasChildren
+                                    sectirTreeFactory.
                                     getNodeLevelsFromMax(field.model.id,
-                                        scope.namespace) + 1)
+                                        scope.namespace) + 1
+                                else
+                                    1
+                            elm.attr "rowspan", rowspan
                             headers.push elm
                         if firstRow
                             firstRow = false

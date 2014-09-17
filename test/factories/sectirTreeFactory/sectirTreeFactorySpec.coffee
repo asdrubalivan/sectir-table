@@ -14,14 +14,18 @@ describe 'sectirTreeFactory', ->
     it 'should has its properties empty when constructed', ->
         expect(Object.keys(sectirTreeFactory.trees).length).toBe(0)
         expect(Object.keys(sectirTreeFactory.maxHeights).length).toBe(0)
+        expect(Object.keys(sectirTreeFactory.nodesById).length).toBe(0)
     it 'should reset its values when function reset is called', ->
         myTree =
             id: 3
         sectirTreeFactory.addTree myTree
         expect(sectirTreeFactory.getTreeHeight()).toBe(1)
+        expect(sectirTreeFactory.nodesById.default).toBeDefined()
         sectirTreeFactory.reset()
         expect(Object.keys(sectirTreeFactory.trees).length).toBe(0)
         expect(Object.keys(sectirTreeFactory.maxHeights).length).toBe(0)
+        expect(Object.keys(sectirTreeFactory.nodesById).length).toBe(0)
+        expect(sectirTreeFactory.nodesById.default).not.toBeDefined()
 
     it 'should get the correct height of a "tree property"', ->
         treeVar1 =

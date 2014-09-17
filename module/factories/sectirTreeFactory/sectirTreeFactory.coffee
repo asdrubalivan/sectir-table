@@ -4,13 +4,16 @@ angular.module 'sectirTableModule.treeFactory', []
             constructor: ->
                 @trees = {}
                 @maxHeights = {}
+                @nodesById = {}
             reset: ->
                 @trees = {}
                 @maxHeights = {}
+                @nodesById = {}
             addTree: (tree, namespace="default") ->
                 treeM = new TreeModel
                 @trees[namespace] = treeM.parse tree
                 @maxHeights[namespace] = undefined
+                @nodesById[namespace] = {}
                 return
             getTreeHeight: (namespace="default") ->
                 if @maxHeights[namespace]?
@@ -29,6 +32,10 @@ angular.module 'sectirTableModule.treeFactory', []
                 else
                     false
             getNodeById: (id, namespace="default") ->
+                if not @trees[namespace]?
+                    return false
+                if @nodesById[namespace][id]?
+                    return @nodesById[namespace][id]
                 id = String id
                 retVal = false
                 @trees[namespace]?.walk (node) ->
@@ -36,9 +43,11 @@ angular.module 'sectirTableModule.treeFactory', []
                     if modelId is id
                         retVal = node
                         return false
-                retVal
+                @nodesById[namespace][id] = retVal
             hasChildren: (node) ->
                 node.children? and node.children.length > 0
+            hasChildrenById: (id, namespace="default") ->
+                @hasChildren(@getNodeById(id,namespace))
             getLeafs: (namespace="default") ->
                 strategy =
                     strategy: 'breadth'
