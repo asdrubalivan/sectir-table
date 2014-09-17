@@ -252,6 +252,27 @@ describe 'sectirTable', ->
                             name: "Third name"
                         }
                     ]
+            @tree4 =
+                id: 1
+                name: "A name"
+                children:
+                    [
+                        {
+                            id: 2
+                            name: "Second name"
+                            children:
+                                [
+                                    {
+                                        id: 3
+                                        name: "Third name"
+                                    }
+                                ]
+                        }
+                        {
+                            id: 4
+                            name: "Fourth name"
+                        }
+                    ]
             @compileEl = (data) ->
                 
                 @$scope.tabledata = data
@@ -261,6 +282,19 @@ describe 'sectirTable', ->
                     </sectir-table>
                 '''
                 @$compile(elm)(@$scope)
+            @checkColRowSpan = (data, rowspan, colspan) ->
+                elm = @compileEl data
+                rowspanArray = []
+                colspanArray = []
+                headers = elm.find "th"
+                angular.forEach headers, (value) ->
+                    tempEl = angular.element value
+                    if tempEl.hasClass "sectir-header"
+                        colspanArray.push tempEl.attr "colspan"
+                        rowspanArray.push tempEl.attr "rowspan"
+                expect(colspanArray).toEqual(colspan)
+                expect(rowspanArray).toEqual(rowspan)
+
         it 'should give a correct colspan and rowspan for sectir-delete', ->
             findSectirDelete = (elm, rowspan) ->
                 colspans = []
@@ -278,3 +312,82 @@ describe 'sectirTable', ->
             findSectirDelete(@compileEl(@tree1),['3'])
             findSectirDelete(@compileEl(@tree2),['1'])
             findSectirDelete(@compileEl(@tree3),['2'])
+
+        it 'should check correct properties in sectir-header', ->
+            # Tree 1
+            rowspan1 =
+                [
+                    # Primer nivel
+                    '1'
+                    # Segundo nivel
+                    '1'
+                    '2'
+                    '2'
+                    # Tercer nivel
+                    '1'
+                ]
+            colspan1 =
+                [
+                    # Primer nivel
+                    '3'
+                    # Segundo nivel
+                    '1'
+                    '1'
+                    '1'
+                    # Tercer nivel
+                    '1'
+                ]
+            @checkColRowSpan @tree1, rowspan1, colspan1
+
+            # Tree 2
+            rowspan2 =
+                [
+                    #Primer nivel
+                    '1'
+                ]
+            colspan2 =
+                [
+                    '1'
+                ]
+            @checkColRowSpan @tree2, rowspan2, colspan2
+
+            # Tree 3
+            rowspan3 =
+                [
+                    # Primer nivel
+                    '1'
+                    # Segundo nivel
+                    '1'
+                    '1'
+                ]
+            colspan3 =
+                [
+                    # Primer nivel
+                    '2'
+                    # Segundo nivel
+                    '1'
+                    '1'
+                ]
+            @checkColRowSpan @tree3, rowspan3, colspan3
+            
+            #Tree 4
+            rowspan4 =
+                [
+                    # Primer nivel
+                    '1'
+                    # Segundo nivel
+                    '1'
+                    '2'
+                    # Tercer nivel
+                    '1'
+                ]
+            colspan4 =
+                [
+                    # Primer nivel
+                    '2'
+                    # Segundo nivel
+                    '1'
+                    '1'
+                    # Tercer nivel
+                    '1'
+                ]
