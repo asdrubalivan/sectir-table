@@ -26,7 +26,35 @@ describe 'sectirTable', ->
             if el.hasClass 'sectir-table-header'
                 lenTr++
         expect(lenTr).toBe(1)
-    
+
+    it 'should update a table when values of tabledata
+        and namespace are changed', ->
+        @$scope.tabledata =
+            id: 1
+            name: "My name"
+        @$scope.namespace = "namespace"
+        elm = angular.element '''
+            <sectir-table tabledata="tabledata" namespace="namespace">
+            </sectir-table>
+        '''
+        elm = @$compile(elm)(@$scope)
+        findHeaders = ->
+            text = []
+            headers = elm.find("th")
+            angular.forEach headers, (value) ->
+                el = angular.element value
+                if el.hasClass 'sectir-header'
+                    text.push(el.text())
+            text
+        expect(findHeaders()).toEqual(["My name"])
+        @$scope.$apply =>
+            @$scope.tabledata.name = "My name 2"
+        expect(findHeaders()).toEqual(["My name 2"])
+        @$scope.$apply =>
+            @$scope.tabledata.name = "My name 3"
+            @$scope.tabledata.namespace = "namespace2"
+        expect(findHeaders()).toEqual(["My name 3"])
+        
     it 'should create a table when a correct input is provided', ->
         @$scope.tabledata =
             id: 2
