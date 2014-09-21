@@ -1,14 +1,15 @@
 angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
     .directive 'sectirTable', [
-        "sectirTreeFactory",
-        (sectirTreeFactory) ->
+        "sectirTreeFactory"
+        "$compile"
+        (sectirTreeFactory, $compile) ->
             {
                 restrict: "EA"
                 scope:
                     namespace: "="
                     tabledata: "="
                     titleField: "="
-                    deleteLabel: "="
+                    deletelabel: "="
                 controller: ["$scope", ($scope) ->
                     @getLeafs = ->
                         sectirTreeFactory.getLeafs
@@ -47,7 +48,9 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                                         field.model.id, scope.namespace)
                                 rowspan = do ->
                                     hasChildren = sectirTreeFactory.
-                                        hasChildrenById field.model.id
+                                        hasChildrenById(
+                                            field.model.id, scope.namespace
+                                        )
                                     if not hasChildren
                                         sectirTreeFactory.
                                         getNodeLevelsFromMax(field.model.id,
@@ -60,7 +63,7 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                                 firstRow = false
                                 elm = angular.element "<th>"
                                 elm.addClass "sectir-delete"
-                                elm.text "{{ deleteLabel }}"
+                                elm.text "{{ deletelabel }}"
                                 elm.attr "colspan", 1
                                 elm.attr "rowspan", sectirTreeFactory.
                                     getTreeHeight scope.namespace
@@ -91,6 +94,7 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                         "
                         elmAnswers = angular.element templateAnswers
                         table.append elmAnswers
+                        $compile(table)(scope)
                         element.append table
                     watchFn = ->
                         [

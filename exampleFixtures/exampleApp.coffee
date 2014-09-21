@@ -26,7 +26,9 @@ tree1 =
 
 angular.module 'ExampleApp', ['sectirTableModule']
     .controller "ExampleCtrl", ["$scope", ($scope) ->
-        $scope.trees = {
+        $scope.ctrlVars = {}
+        $scope.ctrlVars.trees = {
             namespace1: tree1
         }
+        $scope.ctrlVars.label = "My Label"
     ]

@@ -301,12 +301,15 @@ describe 'sectirTable', ->
                             name: "Fourth name"
                         }
                     ]
-            @compileEl = (data) ->
+            @compileEl = (data, namespace = "default") ->
                 
                 @$scope.tabledata = data
+                @$scope.namespace = namespace
                 elm = angular.element '''
                     <sectir-table
-                        tabledata="tabledata">
+                        tabledata="tabledata"
+                        namespace="namespace"
+                        >
                     </sectir-table>
                 '''
                 @$compile(elm)(@$scope)
@@ -340,6 +343,7 @@ describe 'sectirTable', ->
             findSectirDelete(@compileEl(@tree1),['3'])
             findSectirDelete(@compileEl(@tree2),['1'])
             findSectirDelete(@compileEl(@tree3),['2'])
+            findSectirDelete(@compileEl(@tree3, "other"),['2'])
 
         it 'should check correct properties in sectir-header', ->
             # Tree 1

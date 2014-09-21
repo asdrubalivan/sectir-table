@@ -1,10 +1,10 @@
 <html>
     <body ng-app="ExampleApp">
         <div ng-controller="ExampleCtrl">
-            <div ng-repeat="(namespace, tree) in trees">
+            <div ng-repeat="(namespace, tree) in ctrlVars.trees">
+                <div ng-init="label = $parent.ctrlVars.label"></div>
                 <div sectir-table namespace="namespace"
-                    titleField="'name'"
-                    deleteLabel="'Delete me'"
+                    deleteLabel="label"
                     tabledata="tree"></div>
             </div>
         </div>
