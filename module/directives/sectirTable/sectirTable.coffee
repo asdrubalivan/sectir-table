@@ -9,6 +9,11 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                     tabledata: "="
                     titleField: "="
                     deleteLabel: "="
+                controller: ["$scope", ($scope) ->
+                    @getLeafs = ->
+                        sectirTreeFactory.getLeafs
+                        $scope.namespace
+                ]
                 link: (scope, element, attrs, ctrl) ->
                     linkFn = ->
                         scope.namespace = if scope.namespace
@@ -65,6 +70,27 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                             trRows.push tr
                         for val in trRows
                             table.append val
+                        scope.answersObject = {}
+                        scope.answersObject.leafs =
+                            sectirTreeFactory.getLeafs scope.namespace
+                        templateAnswers = "
+                            <tr ng-repeat='ans in answers'
+                                class='sectir-ans-group'>
+
+                                <th ng-repeat='q in answersObjectleafs'
+                                    class='sectir-answer'>
+                                   <input
+                                   ng-model='answersObject.ans[#{titleField}]'
+                                   >
+                                   </input>
+                                </th>
+                                <th ng-click='deleteRow($index)'>
+                                    X
+                                </th>
+                            </tr>
+                        "
+                        elmAnswers = angular.element templateAnswers
+                        table.append elmAnswers
                         element.append table
                     watchFn = ->
                         [

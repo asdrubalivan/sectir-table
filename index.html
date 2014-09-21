@@ -1,0 +1,15 @@
+<html>
+    <body ng-app="ExampleApp">
+        <div ng-controller="ExampleCtrl">
+            <div ng-repeat="(namespace, tree) in trees">
+                <div sectir-table namespace="namespace"
+                    titleField="'name'"
+                    deleteLabel="'Delete me'"
+                    tabledata="tree"></div>
+            </div>
+        </div>
+        <script src="build/bower.js"></script>
+        <script src="build/script.js"></script>
+        <script src="build/example.js"></script>
+    </body>
+</html>

@@ -8,16 +8,23 @@ module.exports = (grunt) ->
             all:
                 files:
                     src: ['Gruntfile.coffee', 'module/**/*.coffee',
-                        'test/**/*.coffee']
+                        'test/**/*.coffee', 'exampleFixtures/**/*.coffee']
                 options:
                     configFile: 'coffeelint.json'
+            
+        bower_concat:
+            all:
+                dest: "build/bower.js"
         coffee:
             compile:
                 files:
                     "build/script.js": ["module/**/*.coffee"]
+                    "build/example.js": ["exampleFixtures/**/*.coffee"]
                 
     grunt.loadNpmTasks 'grunt-karma'
     grunt.loadNpmTasks 'grunt-coffeelint'
     grunt.loadNpmTasks 'grunt-contrib-coffee'
+    grunt.loadNpmTasks 'grunt-bower-concat'
 
     grunt.registerTask 'default', ['coffeelint','karma', "coffee"]
+    grunt.registerTask 'serve', ["default", "bower_concat"]
