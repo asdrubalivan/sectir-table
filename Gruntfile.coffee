@@ -23,6 +23,15 @@ module.exports = (grunt) ->
         'http-server':
             all:
                 root: "./"
+        watch:
+            all:
+                files: [
+                    'module/**/*.coffee'
+                    'exampleFixtures/**/*.coffee'
+                ]
+                tasks: ['serve']
+                options:
+                    livereload: true
                 
                 
     grunt.loadNpmTasks 'grunt-karma'
@@ -30,6 +39,7 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-bower-concat'
     grunt.loadNpmTasks 'grunt-http-server'
+    grunt.loadNpmTasks 'grunt-contrib-watch'
 
     grunt.registerTask 'default', ['coffeelint','karma', "coffee"]
-    grunt.registerTask 'serve', ["default", "bower_concat","http-server"]
+    grunt.registerTask 'serve', ["default", "bower_concat", "http-server"]

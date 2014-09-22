@@ -76,26 +76,35 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                         scope.answersObject = {}
                         scope.answersObject.leafs =
                             sectirTreeFactory.getLeafs scope.namespace
+                        #TODO Debuggear porqué ng-repeat se repite varias veces
                         templateAnswers = "
-                            <tr ng-repeat='ans in answers'
+                            <tr ng-repeat='ans in answersObject.values'
                                 class='sectir-ans-group'>
 
-                                <th ng-repeat='q in answersObjectleafs'
-                                    class='sectir-answer'>
-                                   <input
-                                   ng-model='answersObject.ans[#{titleField}]'
-                                   >
-                                   </input>
-                                </th>
-                                <th ng-click='deleteRow($index)'>
-                                    X
-                                </th>
+                            <th ng-repeat='q in answersObject.leafs'
+                                class='sectir-answer'>
+                               <input
+                        ng-model=
+                           'answersObject.values[$parent.$index][q.model.id]'
+                               >
+                               </input>
+                               <i>{{ $parent.$index }}{{ answersObject.values[$parent.$index][q.model.id] }}</i>
+                            </th>
+                            <th>
+                               <span ng-click='addAnswer()'> X</span>
+                            </th>
                             </tr>
                         "
+                        #TODO Podríamos generar templateAnswers dinamicamente
+                        #Deberíamos escribirlo en diagrama de flujo primero
                         elmAnswers = angular.element templateAnswers
                         table.append elmAnswers
                         $compile(table)(scope)
                         element.append table
+                        scope.answersObject.values = []
+                        scope.addAnswer = ->
+                            scope.answersObject.values.push {}
+                        scope.addAnswer()
                     watchFn = ->
                         [
                             scope.namespace
