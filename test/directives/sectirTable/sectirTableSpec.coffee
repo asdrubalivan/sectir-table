@@ -423,3 +423,125 @@ describe 'sectirTable', ->
                     # Tercer nivel
                     '1'
                 ]
+    describe 'Tests for input', ->
+        beforeEach ->
+            @treeWithSelect =
+                id: 1
+                name: "Select"
+                type: "select"
+                options:
+                    "ng-options": "o for o in [2, 3, 5]"
+            @treeWithOtherProperties =
+                id: 1
+                name: "Header"
+                children:
+                    [
+                        {
+                            id: 2
+                            name: "A checkbox"
+                            type: "checkbox"
+                            options:
+                                name: "checkbox_name"
+                        }
+                        {
+                            id: 3
+                            name: "A father node of email"
+                            children:
+                                [
+                                    {
+                                        id: 4
+                                        name: "A email"
+                                        type: "email"
+                                        options:
+                                            "ng-maxlength": 60
+                                    }
+                                ]
+                        }
+                    ]
+            @treeWithDiffOptionField =
+                id: 1
+                type: "text"
+                name: "A name"
+                opciones:
+                    "ng-minlength": 3
+            @treeWithDiffTitleField =
+                id: 1
+                type: "text"
+                nombre: "Un nombre"
+            @treeWithDiffTypeField =
+                id: 1
+                tipo: "email"
+                name: "A name"
+            @compileEl = (options) ->
+                myScope = @$scope.$new()
+                elm = angular.element "<sectir-table>"
+                for key, value of options
+                    elm.attr key, key
+                    myScope[key] = value
+                retVal = @$compile(elm)(myScope)
+                myScope.$digest()
+                retVal
+        it 'should create a correct <select> input type', ->
+            options = do =>
+                tabledata: @treeWithSelect
+            elm = @compileEl options
+            select = elm.find "select"
+            numberSelects = 0
+            ngOptions = []
+            angular.forEach select, (value) ->
+                numberSelects++
+                el = angular.element value
+                ngOpt = el.attr "ng-options"
+                if ngOpt?
+                    ngOptions.push ngOpt
+            expect(numberSelects).toBe(1)
+            expect(ngOptions).toEqual(["o for o in [2, 3, 5]"])
+        it 'should create an input type correctly', ->
+            options =
+                do =>
+                    tabledata: @treeWithOtherProperties
+            elm = @compileEl options
+            inputs = elm.find "input"
+            inputTestArray = []
+            angular.forEach inputs, (value) ->
+                el = angular.element value
+                inputTestArray.push(el.attr("type"))
+            expect(inputTestArray.length).toBe(2)
+            expect(inputTestArray).toEqual(["checkbox","email"])
+        it 'should pass correct options no matter the name of those ones', ->
+            options =
+                do =>
+                    tabledata: @treeWithDiffOptionField
+                    optionsfield: "opciones"
+            elm = @compileEl options
+            input = elm.find "input"
+            attrs = []
+            angular.forEach input, (value) ->
+                el = angular.element value
+                attrs.push(el.attr("ng-minlength"))
+            expect(attrs).toEqual(["3"])
+
+            options2 =
+                do =>
+                    tabledata: @treeWithDiffTitleField
+                    titlefield: "nombre"
+            texts = []
+            elm = @compileEl options2
+            headers = elm.find "th"
+            angular.forEach headers, (value) ->
+                el = angular.element value
+                if el.hasClass "sectir-header"
+                    texts.push(el.text())
+            expect(texts).toEqual(["Un nombre"])
+
+            options3 =
+                do =>
+                    tabledata: @treeWithDiffTypeField
+                    typefield: "tipo"
+            types = []
+            elm = @compileEl options3
+            inputs = elm.find "input"
+            angular.forEach inputs, (value) ->
+                el = angular.element value
+                types.push(el.attr("type"))
+            expect(types).toEqual(["email"])

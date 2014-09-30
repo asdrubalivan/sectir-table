@@ -98,18 +98,6 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                                 headerRepeat = angular.element "<th>"
                                 headerRepeat.addClass "sectir-answer"
                                 rowModel = ngModelRow l.model.id
-                                #if angular.isDefined(l.model[scope.typefield])
-                                #    if l.model[scope.typefield] is "select"
-                                #        createInputNode = false
-                                #        select = angular.element "<select>"
-                                #        if angular.isDefined \
-                                #            l.model[scope.valuesField]
-                                #            values = l.model[scope.valuesField]
-                                #
-                                #   else
-                                #       createInputNode = true
-                                #else
-                                #    createInputNode = true
                                 typefieldDefined = angular.isDefined(
                                     l.model[scope.typefield]
                                 )
@@ -128,6 +116,7 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                                         input.attr key, value
                                 if scope.debugmodel
                                     iEl = angular.element "<i>"
+                                    iEl.addClass "sectir-debug-model"
                                     iEl.text "{{ #{rowModel} }}"
                                 headerRepeat.append input
                                 if scope.debugmodel
@@ -143,8 +132,6 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                             rowRepeat.append deleteButton
                             rowRepeat
                                 
-                        #TODO Podríamos generar templateAnswers dinamicamente
-                        #Deberíamos escribirlo en diagrama de flujo primero
                         elmAnswers = templateAnswers
                         table.append elmAnswers
                         $compile(table)(scope)

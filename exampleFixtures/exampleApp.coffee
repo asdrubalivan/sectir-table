@@ -55,12 +55,21 @@ tree2 =
             }
         ]
 
+treeWithSelect =
+    id: 1
+    name: "Select"
+    type: "select"
+    options:
+        "ng-options": "o for o in [2, 3, 5]"
+
+
 angular.module 'ExampleApp', ['sectirTableModule']
     .controller "ExampleCtrl", ["$scope", ($scope) ->
         $scope.ctrlVars = {}
         $scope.ctrlVars.trees = {
             namespace1: tree1
             namespace2: tree2
+            namespace3: treeWithSelect
         }
         $scope.ctrlVars.label = "My Label"
         $scope.ctrlVars.debug = true
