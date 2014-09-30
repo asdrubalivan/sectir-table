@@ -11,6 +11,9 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                 typefield: "type"
                 titlefield: "name"
                 optionsfield: "options"
+                addlabel: "Add"
+                addfieldlabel: "Add"
+
             {
                 restrict: "EA"
                 scope:
@@ -19,6 +22,8 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                     titlefield: "=?"
                     deletelabel: "=?"
                     deletefieldlabel: "=?"
+                    addfieldlabel: "=?"
+                    addlabel: "=?"
                     typefield: "=?"
                     debugmodel: "=?"
                     optionsfield: "=?"
@@ -68,12 +73,19 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                                 headers.push elm
                             if firstRow
                                 firstRow = false
+                                treeHeight = sectirTreeFactory.
+                                    getTreeHeight scope.namespace
                                 elm = angular.element "<th>"
                                 elm.addClass "sectir-delete"
                                 elm.text "{{ deletelabel }}"
                                 elm.attr "colspan", 1
-                                elm.attr "rowspan", sectirTreeFactory.
-                                    getTreeHeight scope.namespace
+                                elm.attr "rowspan", treeHeight
+                                elmAdd = angular.element "<th>"
+                                elmAdd.addClass "sectir-add"
+                                elmAdd.text "{{ addlabel }}"
+                                elmAdd.attr "colspan", 1
+                                elmAdd.attr "rowspan", treeHeight
+                                headers.push elmAdd
                                 headers.push elm
                             for val in headers
                                 tr.append val
@@ -126,9 +138,16 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                             deleteButton = angular.element "<th>"
                             deleteButton.addClass "sectir-button-delete"
                             spanDelete = angular.element "<span>"
-                            spanDelete.attr "ng-click", "addAnswer()"
+                            spanDelete.attr "ng-click", "deleteAnswer($index)"
                             spanDelete.text "{{ deletefieldlabel }}"
                             deleteButton.append spanDelete
+                            addButton = angular.element "<th>"
+                            addButton.addClass "sectir-button-add"
+                            spanAdd = angular.element "<span>"
+                            spanAdd.attr "ng-click", "addAnswer()"
+                            spanAdd.text "{{ addfieldlabel }}"
+                            addButton.append spanAdd
+                            rowRepeat.append addButton
                             rowRepeat.append deleteButton
                             rowRepeat
                                 
@@ -139,6 +158,10 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                         scope.answersObject.values = []
                         scope.addAnswer = ->
                             scope.answersObject.values.push {}
+                        scope.deleteAnswer = (index) ->
+                            scope.answersObject.values.splice index, 1
+                            if scope.answersObject.values.length < 1
+                                scope.addAnswer()
                         scope.addAnswer()
                     watchFn = ->
                         [

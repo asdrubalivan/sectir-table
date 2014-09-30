@@ -230,11 +230,15 @@ describe 'sectirTable', ->
         elm = @$compile(elm)(@$scope)
         headers = elm.find "th"
         numberOfHeaders = 0
+        numberOfAddHeaders = 0
         angular.forEach headers, (value) ->
             el = angular.element value
             if el.hasClass 'sectir-delete'
                 numberOfHeaders++
+            else if el.hasClass 'sectir-add'
+                numberOfAddHeaders++
         expect(numberOfHeaders).toBe(1)
+        expect(numberOfAddHeaders).toBe(1)
     
     describe 'tests for colspan and rowspan', ->
         beforeEach ->
@@ -473,13 +477,13 @@ describe 'sectirTable', ->
                 tipo: "email"
                 name: "A name"
             @compileEl = (options) ->
-                myScope = @$scope.$new()
+                @myScope = @$scope.$new()
                 elm = angular.element "<sectir-table>"
                 for key, value of options
                     elm.attr key, key
-                    myScope[key] = value
-                retVal = @$compile(elm)(myScope)
-                myScope.$digest()
+                    @myScope[key] = value
+                retVal = @$compile(elm)(@myScope)
+                @myScope.$digest()
                 retVal
         it 'should create a correct <select> input type', ->
             options = do =>
@@ -545,3 +549,51 @@ describe 'sectirTable', ->
                 el = angular.element value
                 types.push(el.attr("type"))
             expect(types).toEqual(["email"])
+        it 'answer row should have sectir-answer and sectir-button classes', ->
+            options =
+                do =>
+                    tabledata: @treeWithOtherProperties
+            elm = @compileEl options
+            headers = elm.find "th"
+            countHeaders = 0
+            countAdd = 0
+            countDelete = 0
+            angular.forEach headers, (value) ->
+                el = angular.element value
+                if el.hasClass "sectir-answer"
+                    countHeaders++
+                else if el.hasClass "sectir-button-add"
+                    countAdd++
+                else if el.hasClass "sectir-button-delete"
+                    countDelete++
+            expect(countHeaders).toBe(2)
+            expect(countAdd).toBe(1)
+            expect(countDelete).toBe(1)
+        it 'should add and delete elements when clicks are triggered', ->
+            options =
+                do =>
+                    tabledata: @treeWithOtherProperties
+            #Test add
+            elm = @compileEl options
+            row = elm.find("tr").eq(3)
+            #Let's click add
+            row.find("th").eq(2).find("span").triggerHandler("click")
+            @myScope.$digest()
+            count = (expected) ->
+                rows = elm.find("tr")
+                countRows = 0
+                angular.forEach rows, (value) ->
+                    el = angular.element value
+                    if el.hasClass "sectir-ans-row"
+                        countRows++
+                expect(countRows).toBe(expected)
+            count(2)
+            #click delete
+            row.find("th").eq(3).find("span").triggerHandler("click")
+            @myScope.$digest()
+            count(1)
+            #click delete again
+            row.find("th").eq(3).find("span").triggerHandler("click")
+            @myScope.$digest()
+            #it must be 1 again
+            count(1)
