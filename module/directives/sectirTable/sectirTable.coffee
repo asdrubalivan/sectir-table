@@ -3,13 +3,25 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
         "sectirTreeFactory"
         "$compile"
         (sectirTreeFactory, $compile) ->
+            defaultValues =
+                namespace: "default"
+                deletefieldlabel: "Delete"
+                debugmodel: false
+                deletelabel: "Delete"
+                typefield: "type"
+                titlefield: "name"
+                optionsfield: "options"
             {
                 restrict: "EA"
                 scope:
-                    namespace: "="
+                    namespace: "=?"
                     tabledata: "="
-                    titleField: "="
-                    deletelabel: "="
+                    titlefield: "=?"
+                    deletelabel: "=?"
+                    deletefieldlabel: "=?"
+                    typefield: "=?"
+                    debugmodel: "=?"
+                    optionsfield: "=?"
                 controller: ["$scope", ($scope) ->
                     @getLeafs = ->
                         sectirTreeFactory.getLeafs
@@ -17,17 +29,12 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                 ]
                 link: (scope, element, attrs, ctrl) ->
                     linkFn = ->
-                        scope.namespace = if scope.namespace
-                                scope.namespace
-                            else
-                                "default"
+                        for key, value of defaultValues
+                            if not angular.isDefined scope[key]
+                                scope[key] = value
                         sectirTreeFactory.addTree(scope.tabledata,
                             scope.namespace)
                         rows = sectirTreeFactory.getRows scope.namespace
-                        titleField = if scope.titleField
-                                scope.titleField
-                            else
-                                "name"
                         remainingTable = element.find "table"
                         if angular.isElement remainingTable
                             remainingTable.remove()
@@ -41,7 +48,7 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                             tr.addClass "sectir-table-header"
                             for field in row
                                 elm = angular.element("<th>")
-                                elm.text field.model[titleField]
+                                elm.text field.model[scope.titlefield]
                                 elm.addClass "sectir-header"
                                 elm.attr "colspan",
                                     sectirTreeFactory.getNumberLeafsFromNode(
@@ -74,30 +81,71 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                         for val in trRows
                             table.append val
                         scope.answersObject = {}
-                        scope.answersObject.leafs =
-                            sectirTreeFactory.getLeafs scope.namespace
-                        #TODO Debuggear porqué ng-repeat se repite varias veces
-                        templateAnswers = "
-                            <tr ng-repeat='ans in answersObject.values'
-                                class='sectir-ans-group'>
-
-                            <th ng-repeat='q in answersObject.leafs'
-                                class='sectir-answer'>
-                               <input
-                        ng-model=
-                           'answersObject.values[$parent.$index][q.model.id]'
-                               >
-                               </input>
-                               <i>{{ $parent.$index }}{{ answersObject.values[$parent.$index][q.model.id] }}</i>
-                            </th>
-                            <th>
-                               <span ng-click='addAnswer()'> X</span>
-                            </th>
-                            </tr>
-                        "
+                        templateAnswers = do ->
+                            leafs =
+                                sectirTreeFactory.getLeafs scope.namespace
+                            rowRepeat = angular.element "<tr>"
+                            rowRepeat.attr("ng-repeat",
+                                "ans in answersObject.values")
+                            rowRepeat.addClass "sectir-ans-row"
+                            ngModelRow = (modelId) ->
+                                temp = "answersObject.values[$index]"
+                                temp += "[#{modelId}]"
+                                temp
+                            index = 0
+                            #Aquí empezamos a poner valores
+                            for l in leafs
+                                headerRepeat = angular.element "<th>"
+                                headerRepeat.addClass "sectir-answer"
+                                rowModel = ngModelRow l.model.id
+                                #if angular.isDefined(l.model[scope.typefield])
+                                #    if l.model[scope.typefield] is "select"
+                                #        createInputNode = false
+                                #        select = angular.element "<select>"
+                                #        if angular.isDefined \
+                                #            l.model[scope.valuesField]
+                                #            values = l.model[scope.valuesField]
+                                #
+                                #   else
+                                #       createInputNode = true
+                                #else
+                                #    createInputNode = true
+                                typefieldDefined = angular.isDefined(
+                                    l.model[scope.typefield]
+                                )
+                                if typefieldDefined \
+                                        and l.model[scope.typefield] is "select"
+                                    input = angular.element "<select>"
+                                else
+                                    input = angular.element "<input>"
+                                input.attr "ng-model", rowModel
+                                if typefieldDefined
+                                    input.attr "type", l.model[scope.typefield]
+                                if angular.isDefined
+                                    l.model[scope.optionsfield]
+                                    options = l.model[scope.optionsfield]
+                                    for key, value of options
+                                        input.attr key, value
+                                if scope.debugmodel
+                                    iEl = angular.element "<i>"
+                                    iEl.text "{{ #{rowModel} }}"
+                                headerRepeat.append input
+                                if scope.debugmodel
+                                    headerRepeat.append iEl
+                                rowRepeat.append headerRepeat
+                                index++
+                            deleteButton = angular.element "<th>"
+                            deleteButton.addClass "sectir-button-delete"
+                            spanDelete = angular.element "<span>"
+                            spanDelete.attr "ng-click", "addAnswer()"
+                            spanDelete.text "{{ deletefieldlabel }}"
+                            deleteButton.append spanDelete
+                            rowRepeat.append deleteButton
+                            rowRepeat
+                                
                         #TODO Podríamos generar templateAnswers dinamicamente
                         #Deberíamos escribirlo en diagrama de flujo primero
-                        elmAnswers = angular.element templateAnswers
+                        elmAnswers = templateAnswers
                         table.append elmAnswers
                         $compile(table)(scope)
                         element.append table

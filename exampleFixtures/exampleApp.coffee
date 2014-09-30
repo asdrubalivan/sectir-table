@@ -24,11 +24,44 @@ tree1 =
             }
         ]
 
+tree2 =
+    id: 1
+    name: "Header"
+    children:
+        [
+            {
+                id: 2
+                name: "Checkbox"
+                type: "checkbox"
+            }
+            {
+                id: 3
+                name: "List"
+                type: "select"
+                options:
+                    "ng-options": "o for o in [1, 3, 5, 7]"
+            }
+            {
+                id: 4
+                name: "Father of email"
+                children:
+                    [
+                        {
+                            id: 5
+                            name: "Email"
+                            type: "email"
+                        }
+                    ]
+            }
+        ]
+
 angular.module 'ExampleApp', ['sectirTableModule']
     .controller "ExampleCtrl", ["$scope", ($scope) ->
         $scope.ctrlVars = {}
         $scope.ctrlVars.trees = {
             namespace1: tree1
+            namespace2: tree2
         }
         $scope.ctrlVars.label = "My Label"
+        $scope.ctrlVars.debug = true
     ]
