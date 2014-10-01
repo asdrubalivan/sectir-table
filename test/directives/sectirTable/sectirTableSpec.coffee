@@ -462,6 +462,39 @@ describe 'sectirTable', ->
                                 ]
                         }
                     ]
+            @treeWithThreeLeafs =
+                id: 1
+                name: "Header"
+                children:
+                    [
+                        {
+                            id: 2
+                            name: "A checkbox"
+                            type: "checkbox"
+                            options:
+                                name: "checkbox_name"
+                        }
+                        {
+                            id: 3
+                            name: "A father node of email"
+                            children:
+                                [
+                                    {
+                                        id: 4
+                                        name: "A email"
+                                        type: "email"
+                                        options:
+                                            "ng-maxlength": 60
+                                    }
+                                ]
+                        }
+                        {
+                            id: 5
+                            name: "An input"
+                            type: "text"
+                        }
+                    ]
+
             @treeWithDiffOptionField =
                 id: 1
                 type: "text"
@@ -597,3 +630,29 @@ describe 'sectirTable', ->
             @myScope.$digest()
             #it must be 1 again
             count(1)
+        it 'should show correct ng-models', ->
+            options =
+                do =>
+                    tabledata: @treeWithOtherProperties
+            ngModel = (index) ->
+                "answersObject.values[$index][#{index}]"
+            elm = @compileEl options
+            row = elm.find("tr").eq(3)
+            expect(row.find("th").eq(1).find("input").attr("ng-model")).
+                toEqual(ngModel(4))
+            expect(row.find("th").eq(0).find("input").attr("ng-model")).
+                toEqual(ngModel(2))
+            
+            options2 =
+                do =>
+                    tabledata: @treeWithThreeLeafs
+            elm = @compileEl options2
+            row = elm.find("tr").eq(3)
+            expect(row.find("th").eq(0).find("input").attr("ng-model")).
+                toEqual(ngModel(2))
+                
+            expect(row.find("th").eq(1).find("input").attr("ng-model")).
+                toEqual(ngModel(4))
+
+            expect(row.find("th").eq(2).find("input").attr("ng-model")).
+                toEqual(ngModel(5))

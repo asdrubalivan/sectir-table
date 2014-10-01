@@ -48,9 +48,9 @@ angular.module 'sectirTableModule.treeFactory', []
                 node.children? and node.children.length > 0
             hasChildrenById: (id, namespace="default") ->
                 @hasChildren(@getNodeById(id,namespace))
-            getLeafs: (namespace="default") ->
+            getLeafs: (namespace="default", st = "breadth") ->
                 strategy =
-                    strategy: 'breadth'
+                    strategy: st
                 self = @
                 retVal =
                     if @trees[namespace]?

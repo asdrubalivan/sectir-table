@@ -106,7 +106,9 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                                 temp
                             index = 0
                             #Aquí empezamos a poner valores
-                            for l in leafs
+                            leafsByPre = sectirTreeFactory.
+                                getLeafs scope.namespace, "pre"
+                            for l in leafsByPre
                                 headerRepeat = angular.element "<th>"
                                 headerRepeat.addClass "sectir-answer"
                                 rowModel = ngModelRow l.model.id
