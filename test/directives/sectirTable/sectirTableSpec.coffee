@@ -493,6 +493,16 @@ describe 'sectirTable', ->
                             name: "An input"
                             type: "text"
                         }
+                        {
+                            id: 6
+                            name: "Another input"
+                            type: "select"
+                        }
+                        {
+                            id: 7
+                            name: "A different input"
+                            type: "email"
+                        }
                     ]
 
             @treeWithDiffOptionField =
@@ -648,11 +658,44 @@ describe 'sectirTable', ->
                     tabledata: @treeWithThreeLeafs
             elm = @compileEl options2
             row = elm.find("tr").eq(3)
-            expect(row.find("th").eq(0).find("input").attr("ng-model")).
-                toEqual(ngModel(2))
-                
-            expect(row.find("th").eq(1).find("input").attr("ng-model")).
-                toEqual(ngModel(4))
+            testRow = (aRow) ->
+                expect(aRow.find("th").eq(0).find("input").attr("ng-model")).
+                    toEqual(ngModel(2))
+                    
+                expect(aRow.find("th").eq(1).find("input").attr("ng-model")).
+                    toEqual(ngModel(4))
 
-            expect(row.find("th").eq(2).find("input").attr("ng-model")).
-                toEqual(ngModel(5))
+                expect(aRow.find("th").eq(2).find("input").attr("ng-model")).
+                    toEqual(ngModel(5))
+                
+                expect(aRow.find("th").eq(3).find("select").attr("ng-model")).
+                    toEqual(ngModel(6))
+
+                expect(aRow.find("th").eq(4).find("input").attr("ng-model")).
+                    toEqual(ngModel(7))
+            testRow row
+            row.find("th").eq(5).find("span").triggerHandler("click")
+            @myScope.$digest()
+            row = elm.find("tr").eq(4)
+            testRow row
+
+        it 'should show correct labels', ->
+            options =
+                do =>
+                    tabledata: @treeWithThreeLeafs
+                    deletefieldlabel: "Click para borrar"
+                    deletelabel: "Borrar"
+                    addlabel: "Añadir"
+                    addfieldlabel: "Click para añadir"
+            elm = @compileEl options
+            firstRow = elm.find("tr").eq(0)
+            textAddlabel = firstRow.find("th").eq(1).find("span").text()
+            textDeletelabel = firstRow.find("th").eq(2).find("span").text()
+            expect(textAddlabel).toEqual("Añadir")
+            expect(textDeletelabel).toEqual("Borrar")
+            lastRow = elm.find("tr").eq(3)
+            textAddFieldLabel = lastRow.find("th").eq(5).find("span").text()
+            textDeleteFieldLabel =
+                lastRow.find("th").eq(6).find("span").text()
+            expect(textAddFieldLabel).toEqual("Click para añadir")
+            expect(textDeleteFieldLabel).toEqual("Click para borrar")

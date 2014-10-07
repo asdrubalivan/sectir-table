@@ -77,12 +77,16 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                                     getTreeHeight scope.namespace
                                 elm = angular.element "<th>"
                                 elm.addClass "sectir-delete"
-                                elm.text "{{ deletelabel }}"
+                                spanDeleteLabel = angular.element "<span>"
+                                spanDeleteLabel.text "{{ deletelabel }}"
+                                elm.append spanDeleteLabel
                                 elm.attr "colspan", 1
                                 elm.attr "rowspan", treeHeight
                                 elmAdd = angular.element "<th>"
                                 elmAdd.addClass "sectir-add"
-                                elmAdd.text "{{ addlabel }}"
+                                spanAddLabel = angular.element "<span>"
+                                spanAddLabel.text "{{ addlabel }}"
+                                elmAdd.append spanAddLabel
                                 elmAdd.attr "colspan", 1
                                 elmAdd.attr "rowspan", treeHeight
                                 headers.push elmAdd
