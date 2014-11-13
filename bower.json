@@ -6,7 +6,7 @@
     "Jesús Jerez Moreno <jerezmoreno@gmail.com>"
   ],
   "description": "A nested table directive",
-  "main": "index.html",
+  "main": "dist/sectir_module.js",
   "license": "MIT",
   "private": true,
   "ignore": [

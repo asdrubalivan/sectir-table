@@ -23,6 +23,10 @@ module.exports = (grunt) ->
         'http-server':
             all:
                 root: "./"
+        copy:
+            main:
+                src: "build/script.js"
+                dest: "dist/sectir_module.js"
         watch:
             all:
                 files: [
@@ -40,6 +44,7 @@ module.exports = (grunt) ->
     grunt.loadNpmTasks 'grunt-bower-concat'
     grunt.loadNpmTasks 'grunt-http-server'
     grunt.loadNpmTasks 'grunt-contrib-watch'
+    grunt.loadNpmTasks 'grunt-contrib-copy'
 
-    grunt.registerTask 'default', ['coffeelint','karma', "coffee"]
+    grunt.registerTask 'default', ['coffeelint','karma', "coffee", "copy:main"]
     grunt.registerTask 'serve', ["default", "bower_concat", "http-server"]
