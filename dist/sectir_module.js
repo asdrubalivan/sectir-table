@@ -1,6 +1,6 @@
 (function() {
-  angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory']).directive('sectirTable', [
-    "sectirTreeFactory", "$compile", function(sectirTreeFactory, $compile) {
+  angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory', 'sectirTableModule.dataFactory']).directive('sectirTable', [
+    "sectirTreeFactory", "sectirDataFactory", "$compile", function(sectirTreeFactory, sectirDataFactory, $compile) {
       var defaultValues;
       defaultValues = {
         namespace: "default",
@@ -118,7 +118,7 @@
               ngModelRow = function(modelId) {
                 var temp;
                 temp = "answersObject.values[$index]";
-                temp += "[" + modelId + "]";
+                temp += "['" + modelId + "']";
                 return temp;
               };
               index = 0;
@@ -194,11 +194,43 @@
             return [scope.namespace, scope.tabledata];
           };
           linkFn();
-          return scope.$watch(watchFn, linkFn, true);
+          scope.$watch(watchFn, linkFn, true);
+          return scope.$watch("answersObject", function() {
+            return sectirDataFactory.saveData(scope.answersObject, scope.namespace);
+          });
         }
       };
     }
   ]);
+
+}).call(this);
+
+(function() {
+  angular.module('sectirTableModule.dataFactory', []).factory('sectirDataFactory', function() {
+    var SectirDataFactory;
+    return new (SectirDataFactory = (function() {
+      function SectirDataFactory() {
+        this.data = {};
+      }
+
+      SectirDataFactory.prototype.saveData = function(data, namespace) {
+        if (namespace == null) {
+          namespace = "default";
+        }
+        return this.data[namespace] = data;
+      };
+
+      SectirDataFactory.prototype.getData = function(namespace) {
+        if (namespace == null) {
+          namespace = "default";
+        }
+        return this.data[namespace];
+      };
+
+      return SectirDataFactory;
+
+    })());
+  });
 
 }).call(this);
 

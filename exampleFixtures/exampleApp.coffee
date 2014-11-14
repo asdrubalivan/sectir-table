@@ -35,7 +35,7 @@ tree2 =
                 type: "checkbox"
             }
             {
-                id: 3
+                id: "3-1"
                 name: "List"
                 type: "select"
                 options:

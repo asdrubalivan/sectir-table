@@ -645,7 +645,7 @@ describe 'sectirTable', ->
                 do =>
                     tabledata: @treeWithOtherProperties
             ngModel = (index) ->
-                "answersObject.values[$index][#{index}]"
+                "answersObject.values[$index]['#{index}']"
             elm = @compileEl options
             row = elm.find("tr").eq(3)
             expect(row.find("th").eq(1).find("input").attr("ng-model")).

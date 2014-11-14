@@ -1,8 +1,14 @@
-angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
+angular.module('sectirTableModule.table',
+    [
+        'sectirTableModule.treeFactory'
+        'sectirTableModule.dataFactory'
+    ]
+)
     .directive 'sectirTable', [
         "sectirTreeFactory"
+        "sectirDataFactory"
         "$compile"
-        (sectirTreeFactory, $compile) ->
+        (sectirTreeFactory, sectirDataFactory, $compile) ->
             defaultValues =
                 namespace: "default"
                 deletefieldlabel: "Delete"
@@ -106,7 +112,7 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                             rowRepeat.addClass "sectir-ans-row"
                             ngModelRow = (modelId) ->
                                 temp = "answersObject.values[$index]"
-                                temp += "[#{modelId}]"
+                                temp += "['#{modelId}']"
                                 temp
                             index = 0
                             #Aquí empezamos a poner valores
@@ -177,5 +183,10 @@ angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory'])
                     linkFn()
 
                     scope.$watch watchFn, linkFn, true
+                    scope.$watch "answersObject", ->
+                        sectirDataFactory.saveData(
+                            scope.answersObject
+                            scope.namespace
+                        )
             }
     ]
