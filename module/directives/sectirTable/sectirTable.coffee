@@ -184,9 +184,11 @@ angular.module('sectirTableModule.table',
 
                     scope.$watch watchFn, linkFn, true
                     scope.$watch "answersObject", ->
+                        console.log "Guardando datos"
                         sectirDataFactory.saveData(
                             scope.answersObject
                             scope.namespace
                         )
+                       , true
             }
     ]

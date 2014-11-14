@@ -1,4 +1,7 @@
 # Modulo donde las directivas estarán
 # encapsuladas
 
-angular.module 'sectirTableModule', ['sectirTableModule.table']
+angular.module 'sectirTableModule', [
+    'sectirTableModule.table'
+    'sectirTableModule.input'
+]

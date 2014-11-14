@@ -1,6 +1,7 @@
 <html>
     <body ng-app="ExampleApp">
         <div ng-controller="ExampleCtrl">
+            <h1>Trees</h1>
             <div ng-repeat="(namespace, tree) in ctrlVars.trees">
                 <div ng-init="label = $parent.ctrlVars.label"></div>
                 <div sectir-table namespace="namespace"
@@ -8,6 +9,16 @@
                     tabledata="tree"
                     debugmodel="$parent.ctrlVars.debug"></div>
             </div>
+            <h1>Inputs</h1>
+            <div ng-repeat="(namespace, val) in ctrlVars.inputs">
+                <div sectir-input 
+                    namespace="namespace"
+                    scopedata="val"
+                    debugmodel="$parent.ctrlVars.debug">
+                </div>
+            </div>
+            <h1>Data</h1>
+            {{ dataVars | json }}
         </div>
         <script src="build/bower.js"></script>
         <script src="build/script.js"></script>

@@ -1,4 +1,85 @@
 (function() {
+  angular.module('sectirTableModule.input', ['sectirTableModule.dataFactory']).directive('sectirInput', [
+    "sectirDataFactory", "$compile", function(sectirDataFactory, $compile) {
+      var defaultValues;
+      defaultValues = {
+        namespace: "default",
+        debugmodel: false,
+        typefield: "type",
+        namefield: "name",
+        optionsfield: "options"
+      };
+      return {
+        restrict: "EA",
+        scope: {
+          namespace: "=?",
+          typefield: "=?",
+          debugmodel: "=?",
+          namefield: "=?",
+          optionsfield: "=?",
+          scopedata: "="
+        },
+        link: function(scope, element, attrs, ctrl) {
+          var linkFn, watchFn;
+          linkFn = function() {
+            var currObjectName, elm, elmDebug, elmName, elmWrapper, key, type, val, value, wrapDiv, _i, _len, _ref, _ref1;
+            for (key in defaultValues) {
+              value = defaultValues[key];
+              if (!angular.isDefined(scope[key])) {
+                scope[key] = value;
+              }
+            }
+            wrapDiv = angular.element("div");
+            wrapDiv.addClass("sectir-input-main");
+            _ref = scope.scopedata;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              val = _ref[_i];
+              currObjectName = "answersObject['" + val.id + "']";
+              elmWrapper = angular.element("div");
+              elmWrapper.addClass("sectir-input-wrapper");
+              elmName = angular.element("div");
+              elmName.addClass("sectir-input-namefield");
+              elmName.text(val[scope.namefield]);
+              type = val[scope.typefield] === "select" ? "select" : "input";
+              elm = angular.element(type);
+              elm.attr("ng-model", currObjectName);
+              if (angular.isDefined(val[scope.optionsfield])) {
+                _ref1 = val[scope.optionsfield];
+                for (key in _ref1) {
+                  value = _ref1[key];
+                  elm.attr(key, value);
+                }
+              }
+              elmWrapper.append(elmName);
+              elmWrapper.append(elm);
+              if (scope.debugmodel) {
+                elmDebug = angular.element("div");
+                elmDebug.text("{{" + currObjectName + "}}");
+                elmWrapper.append(elmDebug);
+              }
+              wrapDiv.append(elmWrapper);
+            }
+            scope.answersObject = {};
+            $compile(wrapDiv)(scope);
+            return element.append(wrapDivd);
+          };
+          watchFn = function() {
+            return [scope.namespace, scope.scopedata];
+          };
+          linkFn();
+          scope.$watch(watchFn, linkFn, true);
+          return scope.$watch("answersObject", function() {
+            console.log("Guardando datos");
+            return sectirDataFactory.saveData(scope.answersObject, scope.namespace);
+          }, true);
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
   angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory', 'sectirTableModule.dataFactory']).directive('sectirTable', [
     "sectirTreeFactory", "sectirDataFactory", "$compile", function(sectirTreeFactory, sectirDataFactory, $compile) {
       var defaultValues;
@@ -196,8 +277,9 @@
           linkFn();
           scope.$watch(watchFn, linkFn, true);
           return scope.$watch("answersObject", function() {
+            console.log("Guardando datos");
             return sectirDataFactory.saveData(scope.answersObject, scope.namespace);
-          });
+          }, true);
         }
       };
     }

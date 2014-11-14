@@ -62,15 +62,44 @@ treeWithSelect =
     options:
         "ng-options": "o for o in [2, 3, 5]"
 
+inputVars =
+    {
+        "input1":
+            [
+                {
+                    id: "1"
+                    name: "Seleccioname"
+                    type: "select"
+                    options:
+                        "ng-options": "o for o in [4, 5, 9]"
+                    
+                }
+                {
+                    id: "2"
+                    name: "Un email"
+                    type: "email"
+                }
+            ]
+    }
+
 
 angular.module 'ExampleApp', ['sectirTableModule']
-    .controller "ExampleCtrl", ["$scope", ($scope) ->
-        $scope.ctrlVars = {}
-        $scope.ctrlVars.trees = {
-            namespace1: tree1
-            namespace2: tree2
-            namespace3: treeWithSelect
-        }
-        $scope.ctrlVars.label = "My Label"
-        $scope.ctrlVars.debug = true
+    .controller "ExampleCtrl", [
+        "$scope","$interval",
+        "sectirDataFactory", ($scope, $interval, sdf) ->
+            $scope.ctrlVars = {}
+            $scope.ctrlVars.trees = {
+                namespace1: tree1
+                namespace2: tree2
+                namespace3: treeWithSelect
+            }
+            $scope.ctrlVars.inputs = inputVars
+            $scope.ctrlVars.label = "My Label"
+            $scope.ctrlVars.debug = true
+            $scope.dataVars = 0
+            $interval(
+                ->
+                    $scope.dataVars = sdf.data
+                , 1000
+            )
     ]
