@@ -1,4 +1,88 @@
 (function() {
+  angular.module('sectirTableModule.groupinput', ['sectirTableModule.dataFactory']).directive('sectirGroupInput', [
+    "sectirDataFactory", "$compile", function(sectirDataFactory, $compile) {
+      var defaultValues;
+      defaultValues = {
+        namespace: "default",
+        debugmodel: false,
+        typefield: "type",
+        namefield: "name",
+        optionsfield: "options"
+      };
+      return {
+        restrict: "EA",
+        scope: {
+          namespace: "=?",
+          tabledata: "=",
+          namefield: "=?",
+          typefield: "=?",
+          debugmodel: "=?",
+          optionsfield: "=?",
+          scopedata: "="
+        },
+        link: function(scope, element, attrs, ctrl) {
+          var linkFn;
+          scope.answersObject = {};
+          linkFn = function() {
+            var cellWithInput, currObjName, elm, elmDebug, elmName, elmWrapper, key, type, val, value, wrapTable, _i, _len, _ref, _ref1;
+            for (key in defaultValues) {
+              value = defaultValues[key];
+              if (!angular.isDefined(scope[key])) {
+                scope[key] = value;
+              }
+            }
+            wrapTable = angular.element("<table>");
+            wrapTable.addClass("sectir-groupinput-main");
+            _ref = scope.scopedata;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              val = _ref[_i];
+              currObjName = "answersObject['" + val.id + "']";
+              elmWrapper = angular.element("<tr>");
+              elmWrapper.addClass("sectir-groupinput-wrapper");
+              elmName = angular.element("<td>");
+              elmName.addClass("sectir-groupinput-namefield");
+              elmName.text(val[scope.namefield]);
+              type = val[scope.typefield] === "select" ? "select" : "input";
+              elm = angular.element("<" + type + ">");
+              if (type === "input") {
+                elm.attr("type", val[scope.typefield]);
+              }
+              elm.attr("ng-model", currObjName);
+              if (angular.isDefined(val[scope.optionsfield])) {
+                _ref1 = val[scope.optionsfield];
+                for (key in _ref1) {
+                  value = _ref1[key];
+                  elm.attr(key, value);
+                }
+              }
+              elmWrapper.append(elmName);
+              cellWithInput = angular.element("<td>");
+              cellWithInput.addClass("sectir-groupinput-cell");
+              cellWithInput.append(elm);
+              elmWrapper.append(cellWithInput);
+              if (scope.debugmodel) {
+                elmDebug = angular.element("<td>");
+                elmDebug.text("{{" + currObjName + "}}");
+                elmWrapper.append(elmDebug);
+              }
+              wrapTable.append(elmWrapper);
+            }
+            $compile(wrapTable)(scope);
+            element.append(wrapTable);
+          };
+          linkFn();
+          return scope.$watch("answersObject", function() {
+            console.log("Guardando datos");
+            return sectirDataFactory.saveData(scope.answersObject, scope.namespace);
+          }, true);
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
   angular.module('sectirTableModule.input', ['sectirTableModule.dataFactory']).directive('sectirInput', [
     "sectirDataFactory", "$compile", function(sectirDataFactory, $compile) {
       var defaultValues;
@@ -22,27 +106,33 @@
         link: function(scope, element, attrs, ctrl) {
           var linkFn, watchFn;
           linkFn = function() {
-            var currObjectName, elm, elmDebug, elmName, elmWrapper, key, type, val, value, wrapDiv, _i, _len, _ref, _ref1;
+            var currObjectName, divInput, elm, elmDebug, elmName, elmWrapper, key, type, val, value, wrapDiv, _i, _len, _ref, _ref1;
             for (key in defaultValues) {
               value = defaultValues[key];
               if (!angular.isDefined(scope[key])) {
                 scope[key] = value;
               }
             }
-            wrapDiv = angular.element("div");
+            wrapDiv = angular.element("<div>");
             wrapDiv.addClass("sectir-input-main");
             _ref = scope.scopedata;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               val = _ref[_i];
               currObjectName = "answersObject['" + val.id + "']";
-              elmWrapper = angular.element("div");
+              elmWrapper = angular.element("<div>");
               elmWrapper.addClass("sectir-input-wrapper");
-              elmName = angular.element("div");
+              elmName = angular.element("<div>");
               elmName.addClass("sectir-input-namefield");
               elmName.text(val[scope.namefield]);
               type = val[scope.typefield] === "select" ? "select" : "input";
-              elm = angular.element(type);
+              divInput = angular.element("<div>");
+              divInput.addClass("sectir-input-input");
+              elm = angular.element("<" + type + ">");
+              if (type === "input") {
+                elm.attr("type", val[scope.typefield]);
+              }
               elm.attr("ng-model", currObjectName);
+              divInput.append(elm);
               if (angular.isDefined(val[scope.optionsfield])) {
                 _ref1 = val[scope.optionsfield];
                 for (key in _ref1) {
@@ -51,9 +141,9 @@
                 }
               }
               elmWrapper.append(elmName);
-              elmWrapper.append(elm);
+              elmWrapper.append(divInput);
               if (scope.debugmodel) {
-                elmDebug = angular.element("div");
+                elmDebug = angular.element("<div>");
                 elmDebug.text("{{" + currObjectName + "}}");
                 elmWrapper.append(elmDebug);
               }
@@ -61,13 +151,12 @@
             }
             scope.answersObject = {};
             $compile(wrapDiv)(scope);
-            return element.append(wrapDivd);
+            return element.append(wrapDiv);
           };
           watchFn = function() {
             return [scope.namespace, scope.scopedata];
           };
           linkFn();
-          scope.$watch(watchFn, linkFn, true);
           return scope.$watch("answersObject", function() {
             console.log("Guardando datos");
             return sectirDataFactory.saveData(scope.answersObject, scope.namespace);
@@ -492,6 +581,6 @@
 }).call(this);
 
 (function() {
-  angular.module('sectirTableModule', ['sectirTableModule.table']);
+  angular.module('sectirTableModule', ['sectirTableModule.table', 'sectirTableModule.input', 'sectirTableModule.groupinput']);
 
 }).call(this);

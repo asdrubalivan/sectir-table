@@ -17,8 +17,19 @@
                     debugmodel="$parent.ctrlVars.debug">
                 </div>
             </div>
+            <h1>Group Input</h1>
+            <div ng-repeat="(namespace, val) in ctrlVars.grouptableinputs">
+                <div sectir-group-input 
+                    namespace="namespace"
+                    scopedata="val"
+                    debugmodel="$parent.ctrlVars.debug">
+                </div>
+            </div>
+
             <h1>Data</h1>
             {{ dataVars | json }}
+            <h1>CtrlVars</h1>
+            {{ ctrlVars | json }}
         </div>
         <script src="build/bower.js"></script>
         <script src="build/script.js"></script>

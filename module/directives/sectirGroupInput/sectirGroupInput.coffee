@@ -1,9 +1,9 @@
-angular.module('sectirTableModule.input',
+angular.module('sectirTableModule.groupinput',
     [
         'sectirTableModule.dataFactory'
     ]
 )
-    .directive 'sectirInput', [
+    .directive 'sectirGroupInput', [
         "sectirDataFactory"
         "$compile"
         (sectirDataFactory, $compile) ->
@@ -18,56 +18,60 @@ angular.module('sectirTableModule.input',
                 restrict: "EA"
                 scope:
                     namespace: "=?"
+                    tabledata: "="
+                    namefield: "=?"
                     typefield: "=?"
                     debugmodel: "=?"
-                    namefield: "=?"
                     optionsfield: "=?"
                     scopedata: "="
                 link: (scope, element, attrs, ctrl) ->
+                    scope.answersObject = {}
                     linkFn = ->
                         for key, value of defaultValues
                             if not angular.isDefined scope[key]
                                 scope[key] = value
-
-                        wrapDiv = angular.element "<div>"
-                        wrapDiv.addClass "sectir-input-main"
+                        
+                        wrapTable = angular.element "<table>"
+                        wrapTable.addClass "sectir-groupinput-main"
                         for val in scope.scopedata
-                            currObjectName = "answersObject['#{val.id}']"
-
-                            elmWrapper = angular.element "<div>"
-                            elmWrapper.addClass "sectir-input-wrapper"
-                            elmName = angular.element "<div>"
-                            elmName.addClass "sectir-input-namefield"
+                            currObjName = "answersObject['#{val.id}']"
+                            elmWrapper = angular.element "<tr>"
+                            elmWrapper.addClass "sectir-groupinput-wrapper"
+                            elmName = angular.element "<td>"
+                            elmName.addClass "sectir-groupinput-namefield"
                             elmName.text val[scope.namefield]
                             type = if val[scope.typefield] is "select"
                                 "select"
                             else
                                 "input"
-                            divInput = angular.element "<div>"
-                            divInput.addClass "sectir-input-input"
+                            
                             elm = angular.element "<#{type}>"
                             if type is "input"
                                 elm.attr "type", val[scope.typefield]
-                            elm.attr "ng-model", currObjectName
-                            divInput.append elm
+                            elm.attr "ng-model", currObjName
                             if angular.isDefined val[scope.optionsfield]
                                 for key, value of val[scope.optionsfield]
                                     elm.attr key, value
                             elmWrapper.append elmName
-                            elmWrapper.append divInput
+                            cellWithInput = angular.element "<td>"
+                            cellWithInput.addClass "sectir-groupinput-cell"
+                            cellWithInput.append elm
+                            elmWrapper.append cellWithInput
                             if scope.debugmodel
-                                elmDebug = angular.element "<div>"
-                                elmDebug.text "{{#{currObjectName}}}"
+                                elmDebug = angular.element "<td>"
+                                elmDebug.text "{{#{currObjName}}}"
                                 elmWrapper.append elmDebug
-                            wrapDiv.append elmWrapper
-                        scope.answersObject = {}
-                        $compile(wrapDiv)(scope)
-                        element.append wrapDiv
-                    watchFn = ->
-                        [
-                            scope.namespace
-                            scope.scopedata
-                        ]
+                            wrapTable.append elmWrapper
+                        $compile(wrapTable)(scope)
+                        element.append wrapTable
+                        return
+
+                        
+                    #watchFn = ->
+                    #    [
+                    #        scope.namespace
+                    #        scope.scopedata
+                    #    ]
                     linkFn()
                     #scope.$watch watchFn, linkFn, true
                     scope.$watch "answersObject", ->

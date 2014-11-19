@@ -94,6 +94,10 @@ angular.module 'ExampleApp', ['sectirTableModule']
                 namespace3: treeWithSelect
             }
             $scope.ctrlVars.inputs = inputVars
+            #Voy a copiar lo que hay en inputVars["input1"]
+            $scope.ctrlVars.grouptableinputs = {}
+            $scope.ctrlVars.grouptableinputs["groupinput"] =
+                angular.copy $scope.ctrlVars.inputs["input1"]
             $scope.ctrlVars.label = "My Label"
             $scope.ctrlVars.debug = true
             $scope.dataVars = 0

@@ -4,4 +4,5 @@
 angular.module 'sectirTableModule', [
     'sectirTableModule.table'
     'sectirTableModule.input'
+    'sectirTableModule.groupinput'
 ]
