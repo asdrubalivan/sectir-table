@@ -169,6 +169,124 @@
 }).call(this);
 
 (function() {
+  angular.module('sectirTableModule.pager', ['sectirTableModule.dataFactory', 'sectirTableModule.input', 'sectirTableModule.table', 'sectirTableModule.groupinput']).directive('sectirPager', [
+    "$compile", function($compile) {
+      return {
+        restrict: "EA",
+        scope: {
+          values: "=",
+          settings: "=?",
+          finalizefunc: "&"
+        },
+        controller: [
+          "$scope", function($scope) {
+            $scope.currPos = 0;
+            $scope.nextButtonClick = function() {
+              if ($scope.isNextButtonClickable()) {
+                $scope.currPos++;
+              }
+            };
+            $scope.prevButtonClick = function() {
+              if ($scope.isPrevButtonClickable()) {
+                --$scope.currPos;
+              }
+            };
+            $scope.isPrevButtonClickable = function() {
+              return $scope.currPos > 0;
+            };
+            $scope.isNextButtonClickable = function() {
+              return $scope.currPos < ($scope.values.length - 1);
+            };
+            $scope.isFinalizeButtonClickable = function() {
+              return $scope.finalizefunc && $scope.currPos === ($scope.values.length - 1);
+            };
+            $scope.nextButtonText = "Siguiente";
+            $scope.prevButtonText = "Anterior";
+            return $scope.finalizeButtonText = "Finalizar";
+          }
+        ],
+        link: function(scope, element, attrs, ctrl) {
+          var buttonDivRow, buttonFinal, buttonNext, buttonPrev, directive, divContainer, divWholeContainer, i, isSettingsDefined, key, myValues, t, val, valueVariable, _i, _j, _len, _len1, _ref;
+          myValues = angular.copy(scope.values);
+          divWholeContainer = angular.element("<div>");
+          divWholeContainer.addClass("sectir-pager-wholecontainer");
+          isSettingsDefined = {};
+          isSettingsDefined["all"] = angular.isDefined(scope.settings);
+          _ref = ["input", "table", "groupinput"];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            t = _ref[_i];
+            isSettingsDefined[t] = isSettingsDefined["all"] && angular.isDefined(scope.settings[t]);
+          }
+          for (i = _j = 0, _len1 = myValues.length; _j < _len1; i = ++_j) {
+            val = myValues[i];
+            divContainer = angular.element("<div>");
+            divContainer.addClass("sectir-pager-container");
+            switch (val.type) {
+              case "input":
+                directive = angular.element("<sectir-input>");
+                break;
+              case "table":
+                directive = angular.element("<sectir-table>");
+                break;
+              case "groupinput":
+                directive = angular.element("<sectir-group-input>");
+                break;
+              default:
+                throw new Error('Type must be input, table\nor group-input');
+            }
+            if (isSettingsDefined[val.type]) {
+              for (key in scope.settings[val.type]) {
+                directive.attr(key, "settings." + val.type + "." + key);
+              }
+            }
+            valueVariable = (function() {
+              switch (val.type) {
+                case "input":
+                case "groupinput":
+                  return "scopedata";
+                case "table":
+                  return "tabledata";
+                default:
+                  return "";
+              }
+            })();
+            directive.attr(valueVariable, "values[" + i + "].values");
+            directive.attr("namespace", "values[" + i + "].namespace");
+            divContainer.attr("ng-show", "currPos === " + i);
+            divContainer.append(directive);
+            divWholeContainer.append(divContainer);
+          }
+          buttonDivRow = angular.element("<div>");
+          buttonDivRow.addClass("sectir-pager-button-row");
+          buttonPrev = angular.element("<button>");
+          buttonPrev.addClass("sectir-pager-prev-button");
+          buttonPrev.text("{{ prevButtonText }}");
+          buttonPrev.attr("ng-click", "prevButtonClick()");
+          buttonPrev.attr("ng-disabled", "!isPrevButtonClickable()");
+          buttonNext = angular.element("<button>");
+          buttonNext.addClass("sectir-pager-next-button");
+          buttonNext.text("{{ nextButtonText }}");
+          buttonNext.attr("ng-click", "nextButtonClick()");
+          buttonNext.attr("ng-disabled", "!isNextButtonClickable()");
+          buttonFinal = angular.element("<button>");
+          buttonFinal.addClass("sectir-pager-final-button");
+          buttonFinal.text("{{ finalizeButtonText }}");
+          buttonFinal.attr("ng-click", "finalizefunc()");
+          buttonFinal.attr("ng-disabled", "!isFinalizeButtonClickable()");
+          buttonDivRow.append(buttonPrev);
+          buttonDivRow.append(buttonNext);
+          buttonDivRow.append(buttonFinal);
+          divWholeContainer.append(buttonDivRow);
+          $compile(divWholeContainer)(scope);
+          return element.append(divWholeContainer);
+        }
+      };
+    }
+  ]);
+
+}).call(this);
+
+(function() {
   angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory', 'sectirTableModule.dataFactory']).directive('sectirTable', [
     "sectirTreeFactory", "sectirDataFactory", "$compile", function(sectirTreeFactory, sectirDataFactory, $compile) {
       var defaultValues;
@@ -581,6 +699,6 @@
 }).call(this);
 
 (function() {
-  angular.module('sectirTableModule', ['sectirTableModule.table', 'sectirTableModule.input', 'sectirTableModule.groupinput']);
+  angular.module('sectirTableModule', ['sectirTableModule.table', 'sectirTableModule.input', 'sectirTableModule.groupinput', 'sectirTableModule.pager']);
 
 }).call(this);

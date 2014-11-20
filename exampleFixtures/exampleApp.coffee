@@ -82,6 +82,82 @@ inputVars =
             ]
     }
 
+sectirPagerInput =
+    [
+        {
+            type: "input"
+            namespace: "input"
+            values:
+                [
+                    {
+                        id: "1"
+                        name: "My select"
+                        type: "select"
+                        options:
+                            "ng-options": "x for x in [1, 2, 3, 5]"
+                    }
+                    {
+                        id: "2"
+                        name: "An email"
+                        type: "email"
+                    }
+                ]
+        }
+        {
+            type: "groupinput"
+            namespace: "groupinput"
+            values:
+                [
+                    {
+                        id: "1"
+                        name: "My select"
+                        type: "select"
+                        options:
+                            "ng-options": "x for x in [1, 2, 3, 5]"
+                    }
+                    {
+                        id: "2"
+                        name: "An email"
+                        type: "second email"
+                    }
+               ]
+            
+        }
+        {
+            type: "table"
+            namespace: "table"
+            values:
+                {
+                    id: 1
+                    name: "Header"
+                    children:
+                        [
+                            {
+                                id: 2
+                                name: "Header 2"
+                                children:
+                                    [
+                                        {
+                                            id: 3
+                                            name: "Header 3"
+                                        }
+                                        {
+                                            id: 4
+                                            name: "Header 4"
+                                        }
+                                    ]
+                            }
+                            {
+                                id: 5
+                                name: "Header 5"
+                            }
+                        ]
+                }
+        }
+    ]
+
+exampleClick = ->
+    alert "Me clickearon"
 
 angular.module 'ExampleApp', ['sectirTableModule']
     .controller "ExampleCtrl", [
@@ -106,4 +182,6 @@ angular.module 'ExampleApp', ['sectirTableModule']
                     $scope.dataVars = sdf.data
                 , 1000
             )
+            $scope.ctrlVars.pagerInput = sectirPagerInput
+            $scope.ctrlVars.clickFunc = exampleClick
     ]

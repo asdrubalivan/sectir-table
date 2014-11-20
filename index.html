@@ -25,7 +25,11 @@
                     debugmodel="$parent.ctrlVars.debug">
                 </div>
             </div>
-
+            <h1>Pager Input</h1>
+            <div sectir-pager
+                values="ctrlVars.pagerInput"
+                finalizefunc="ctrlVars.clickFunc()">
+            </div>
             <h1>Data</h1>
             {{ dataVars | json }}
             <h1>CtrlVars</h1>
