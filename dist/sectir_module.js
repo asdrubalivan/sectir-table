@@ -299,7 +299,9 @@
         titlefield: "name",
         optionsfield: "options",
         addlabel: "Add",
-        addfieldlabel: "Add"
+        addfieldlabel: "Add",
+        subquestions: false,
+        subqenun: "enunciado"
       };
       return {
         restrict: "EA",
@@ -313,26 +315,42 @@
           addlabel: "=?",
           typefield: "=?",
           debugmodel: "=?",
-          optionsfield: "=?"
+          optionsfield: "=?",
+          subquestions: "=?",
+          subqenun: "=?"
         },
         controller: [
           "$scope", function($scope) {
-            return this.getLeafs = function() {
-              sectirTreeFactory.getLeafs;
-              return $scope.namespace;
+            $scope.answersObject = {};
+            if (!$scope.subquestions) {
+              $scope.answersObject.values = [];
+            }
+            $scope.addAnswer = function() {
+              return $scope.answersObject.values.push({});
             };
+            $scope.deleteAnswer = function(index) {
+              $scope.answersObject.values.splice(index, 1);
+              if ($scope.answersObject.values.length < 1) {
+                return $scope.addAnswer();
+              }
+            };
+            $scope.haveSubQuestions = function() {
+              return $scope.subquestions instanceof Array;
+            };
+            return $scope.subqtitle = "Opciones";
           }
         ],
         link: function(scope, element, attrs, ctrl) {
           var linkFn, watchFn;
           linkFn = function() {
-            var elm, elmAdd, elmAnswers, field, firstRow, headers, key, remainingTable, row, rows, rowspan, spanAddLabel, spanDeleteLabel, table, templateAnswers, tr, trRows, treeHeight, val, value, _i, _j, _k, _l, _len, _len1, _len2, _len3;
+            var elm, elmAdd, field, firstRow, haveSubQuestions, headers, key, ngModelRow, remainingTable, row, rows, rowspan, spanAddLabel, spanDeleteLabel, subQ, table, templateAnswers, templateAnswersFn, tr, trRows, treeHeight, val, value, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref;
             for (key in defaultValues) {
               value = defaultValues[key];
               if (!angular.isDefined(scope[key])) {
                 scope[key] = value;
               }
             }
+            haveSubQuestions = scope.haveSubQuestions();
             sectirTreeFactory.addTree(scope.tabledata, scope.namespace);
             rows = sectirTreeFactory.getRows(scope.namespace);
             remainingTable = element.find("table");
@@ -369,22 +387,31 @@
               if (firstRow) {
                 firstRow = false;
                 treeHeight = sectirTreeFactory.getTreeHeight(scope.namespace);
-                elm = angular.element("<th>");
-                elm.addClass("sectir-delete");
-                spanDeleteLabel = angular.element("<span>");
-                spanDeleteLabel.text("{{ deletelabel }}");
-                elm.append(spanDeleteLabel);
-                elm.attr("colspan", 1);
-                elm.attr("rowspan", treeHeight);
-                elmAdd = angular.element("<th>");
-                elmAdd.addClass("sectir-add");
-                spanAddLabel = angular.element("<span>");
-                spanAddLabel.text("{{ addlabel }}");
-                elmAdd.append(spanAddLabel);
-                elmAdd.attr("colspan", 1);
-                elmAdd.attr("rowspan", treeHeight);
-                headers.push(elmAdd);
-                headers.push(elm);
+                if (!haveSubQuestions) {
+                  elm = angular.element("<th>");
+                  elm.addClass("sectir-delete");
+                  spanDeleteLabel = angular.element("<span>");
+                  spanDeleteLabel.text("{{ deletelabel }}");
+                  elm.append(spanDeleteLabel);
+                  elm.attr("colspan", 1);
+                  elm.attr("rowspan", treeHeight);
+                  elmAdd = angular.element("<th>");
+                  elmAdd.addClass("sectir-add");
+                  spanAddLabel = angular.element("<span>");
+                  spanAddLabel.text("{{ addlabel }}");
+                  elmAdd.append(spanAddLabel);
+                  elmAdd.attr("colspan", 1);
+                  elmAdd.attr("rowspan", treeHeight);
+                  headers.push(elmAdd);
+                  headers.push(elm);
+                } else {
+                  elm = angular.element("<th>");
+                  elm.addClass("sectir-subq-title");
+                  elm.text("{{subqtitle}}");
+                  elm.attr("colspan", 1);
+                  elm.attr("rowspan", treeHeight);
+                  headers.unshift(elm);
+                }
               }
               for (_k = 0, _len2 = headers.length; _k < _len2; _k++) {
                 val = headers[_k];
@@ -396,93 +423,120 @@
               val = trRows[_l];
               table.append(val);
             }
-            scope.answersObject = {};
-            templateAnswers = (function() {
-              var addButton, deleteButton, headerRepeat, iEl, index, input, l, leafs, leafsByPre, ngModelRow, options, rowModel, rowRepeat, spanAdd, spanDelete, typefieldDefined, _len4, _m;
+            ngModelRow = function(modelId, subQID) {
+              var temp;
+              if (subQID == null) {
+                subQID = false;
+              }
+              temp = "answersObject.values";
+              if (subQID === false) {
+                temp += "[$index]";
+              }
+              temp += "['" + modelId + "']";
+              if (subQID !== false) {
+                temp += "['" + subQID + "']";
+              }
+              return temp;
+            };
+            templateAnswersFn = function(subQuestion) {
+              var addButton, deleteButton, insertHeaders, leafs, leafsByPre, rowRepeat, spanAdd, spanDelete;
+              if (subQuestion == null) {
+                subQuestion = false;
+              }
               leafs = sectirTreeFactory.getLeafs(scope.namespace);
               rowRepeat = angular.element("<tr>");
-              rowRepeat.attr("ng-repeat", "ans in answersObject.values");
-              rowRepeat.addClass("sectir-ans-row");
-              ngModelRow = function(modelId) {
-                var temp;
-                temp = "answersObject.values[$index]";
-                temp += "['" + modelId + "']";
-                return temp;
-              };
-              index = 0;
-              leafsByPre = sectirTreeFactory.getLeafs(scope.namespace, "pre");
-              for (_m = 0, _len4 = leafsByPre.length; _m < _len4; _m++) {
-                l = leafsByPre[_m];
-                headerRepeat = angular.element("<th>");
-                headerRepeat.addClass("sectir-answer");
-                rowModel = ngModelRow(l.model.id);
-                typefieldDefined = angular.isDefined(l.model[scope.typefield]);
-                if (typefieldDefined && l.model[scope.typefield] === "select") {
-                  input = angular.element("<select>");
-                } else {
-                  input = angular.element("<input>");
-                }
-                input.attr("ng-model", rowModel);
-                if (typefieldDefined) {
-                  input.attr("type", l.model[scope.typefield]);
-                }
-                if (angular.isDefined) {
-                  l.model[scope.optionsfield];
-                  options = l.model[scope.optionsfield];
-                  for (key in options) {
-                    value = options[key];
-                    input.attr(key, value);
-                  }
-                }
-                if (scope.debugmodel) {
-                  iEl = angular.element("<i>");
-                  iEl.addClass("sectir-debug-model");
-                  iEl.text("{{ " + rowModel + " }}");
-                }
-                headerRepeat.append(input);
-                if (scope.debugmodel) {
-                  headerRepeat.append(iEl);
-                }
-                rowRepeat.append(headerRepeat);
-                index++;
+              if (subQuestion === false) {
+                rowRepeat.attr("ng-repeat", "ans in answersObject.values");
               }
-              deleteButton = angular.element("<th>");
-              deleteButton.addClass("sectir-button-delete");
-              spanDelete = angular.element("<span>");
-              spanDelete.attr("ng-click", "deleteAnswer($index)");
-              spanDelete.text("{{ deletefieldlabel }}");
-              deleteButton.append(spanDelete);
-              addButton = angular.element("<th>");
-              addButton.addClass("sectir-button-add");
-              spanAdd = angular.element("<span>");
-              spanAdd.attr("ng-click", "addAnswer()");
-              spanAdd.text("{{ addfieldlabel }}");
-              addButton.append(spanAdd);
-              rowRepeat.append(addButton);
-              rowRepeat.append(deleteButton);
+              rowRepeat.addClass("sectir-ans-row");
+              leafsByPre = sectirTreeFactory.getLeafs(scope.namespace, "pre");
+              insertHeaders = function() {
+                var headerRepeat, headerSubQ, iEl, input, l, options, rowModel, typefieldDefined, _len4, _m;
+                if (subQuestion) {
+                  headerSubQ = angular.element("<th>");
+                  headerSubQ.text(subQuestion[scope.subqenun]);
+                  headerSubQ.addClass("sectir-table-subq");
+                  rowRepeat.append(headerSubQ);
+                }
+                for (_m = 0, _len4 = leafsByPre.length; _m < _len4; _m++) {
+                  l = leafsByPre[_m];
+                  headerRepeat = angular.element("<th>");
+                  headerRepeat.addClass("sectir-answer");
+                  if (!haveSubQuestions) {
+                    rowModel = ngModelRow(l.model.id);
+                  } else {
+                    rowModel = ngModelRow(l.model.id, subQuestion.id);
+                  }
+                  typefieldDefined = angular.isDefined(l.model[scope.typefield]);
+                  if (typefieldDefined && l.model[scope.typefield] === "select") {
+                    input = angular.element("<select>");
+                  } else {
+                    input = angular.element("<input>");
+                  }
+                  input.attr("ng-model", rowModel);
+                  if (typefieldDefined) {
+                    input.attr("type", l.model[scope.typefield]);
+                  }
+                  if (angular.isDefined) {
+                    l.model[scope.optionsfield];
+                    options = l.model[scope.optionsfield];
+                    for (key in options) {
+                      value = options[key];
+                      input.attr(key, value);
+                    }
+                  }
+                  if (scope.debugmodel) {
+                    iEl = angular.element("<i>");
+                    iEl.addClass("sectir-debug-model");
+                    iEl.text("{{ " + rowModel + " }}");
+                  }
+                  headerRepeat.append(input);
+                  if (scope.debugmodel) {
+                    headerRepeat.append(iEl);
+                  }
+                  rowRepeat.append(headerRepeat);
+                }
+              };
+              insertHeaders();
+              if (!haveSubQuestions) {
+                deleteButton = angular.element("<th>");
+                deleteButton.addClass("sectir-button-delete");
+                spanDelete = angular.element("<span>");
+                spanDelete.attr("ng-click", "deleteAnswer($index)");
+                spanDelete.text("{{ deletefieldlabel }}");
+                deleteButton.append(spanDelete);
+                addButton = angular.element("<th>");
+                addButton.addClass("sectir-button-add");
+                spanAdd = angular.element("<span>");
+                spanAdd.attr("ng-click", "addAnswer()");
+                spanAdd.text("{{ addfieldlabel }}");
+                addButton.append(spanAdd);
+                rowRepeat.append(addButton);
+                rowRepeat.append(deleteButton);
+              }
               return rowRepeat;
-            })();
-            elmAnswers = templateAnswers;
-            table.append(elmAnswers);
+            };
+            if (!haveSubQuestions) {
+              templateAnswers = templateAnswersFn();
+              table.append(templateAnswers);
+            } else {
+              _ref = scope.subquestions;
+              for (_m = 0, _len4 = _ref.length; _m < _len4; _m++) {
+                subQ = _ref[_m];
+                templateAnswers = templateAnswersFn(subQ);
+                table.append(templateAnswers);
+              }
+            }
             $compile(table)(scope);
             element.append(table);
-            scope.answersObject.values = [];
-            scope.addAnswer = function() {
-              return scope.answersObject.values.push({});
-            };
-            scope.deleteAnswer = function(index) {
-              scope.answersObject.values.splice(index, 1);
-              if (scope.answersObject.values.length < 1) {
-                return scope.addAnswer();
-              }
-            };
-            return scope.addAnswer();
+            if (!haveSubQuestions) {
+              return scope.addAnswer();
+            }
           };
           watchFn = function() {
             return [scope.namespace, scope.tabledata];
           };
           linkFn();
-          scope.$watch(watchFn, linkFn, true);
           return scope.$watch("answersObject", function() {
             console.log("Guardando datos");
             return sectirDataFactory.saveData(scope.answersObject, scope.namespace);

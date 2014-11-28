@@ -30,6 +30,10 @@
                 values="ctrlVars.pagerInput"
                 finalizefunc="ctrlVars.clickFunc()">
             </div>
+            <h1> Otro input <i>Podría haber falla en dataVars debido a que se usan dos scopes iguales</i></h1>
+            <div sectir-table namespace="ctrlVars.namespaceSub"
+                tabledata="ctrlVars.trees.namespace2"
+                subquestions="ctrlVars.subQs"></div>
             <h1>Data</h1>
             {{ dataVars | json }}
             <h1>CtrlVars</h1>

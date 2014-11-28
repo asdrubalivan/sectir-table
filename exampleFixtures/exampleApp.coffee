@@ -54,6 +54,21 @@ tree2 =
                     ]
             }
         ]
+subQs =
+    [
+        {
+            enunciado: "Mi enunciado 1"
+            id: 1
+        }
+        {
+            enunciado: "Mi segundo enunciado"
+            id: 2
+        }
+        {
+            enunciado: "Mi tercer enunciado"
+            id: 3
+        }
+    ]
 
 treeWithSelect =
     id: 1
@@ -184,4 +199,6 @@ angular.module 'ExampleApp', ['sectirTableModule']
             )
             $scope.ctrlVars.pagerInput = sectirPagerInput
             $scope.ctrlVars.clickFunc = exampleClick
+            $scope.ctrlVars.subQs = subQs
+            $scope.ctrlVars.namespaceSub = "subQs"
     ]
