@@ -582,202 +582,214 @@
 }).call(this);
 
 (function() {
-  angular.module('sectirTableModule.treeFactory', []).factory('sectirTreeFactory', function() {
-    var SectirTreeFactory;
-    return new (SectirTreeFactory = (function() {
-      function SectirTreeFactory() {
-        this.trees = {};
-        this.maxHeights = {};
-        this.nodesById = {};
-      }
+  var sectirTreeFactoryModule;
 
-      SectirTreeFactory.prototype.reset = function() {
-        this.trees = {};
-        this.maxHeights = {};
-        return this.nodesById = {};
-      };
+  sectirTreeFactoryModule = angular.module('sectirTableModule.treeFactory', ['sectirTableModule.treeModelFactory']);
 
-      SectirTreeFactory.prototype.addTree = function(tree, namespace, namefield, typeField, anoComienzo, anoFinal) {
-        var treeM, treeParsed;
-        if (namespace == null) {
-          namespace = "default";
+  sectirTreeFactoryModule.factory('sectirTreeFactory', [
+    "treeModelFactory", function(treeM) {
+      var SectirTreeFactory;
+      return new (SectirTreeFactory = (function() {
+        function SectirTreeFactory() {
+          this.trees = {};
+          this.maxHeights = {};
+          this.nodesById = {};
         }
-        if (namefield == null) {
-          namefield = "name";
-        }
-        if (typeField == null) {
-          typeField = "type";
-        }
-        if (anoComienzo == null) {
-          anoComienzo = 1200;
-        }
-        if (anoFinal == null) {
-          anoFinal = 1207;
-        }
-        treeM = new TreeModel;
-        treeParsed = treeM.parse(tree);
-        treeParsed.walk(function(node) {
-          var ano, anoInput, nodeAnoInput, _i;
-          if (node.model[typeField] === "ano") {
-            for (ano = _i = anoComienzo; _i <= anoFinal; ano = _i += 1) {
-              anoInput = {};
-              anoInput.id = "" + node.model.id + "-" + ano;
-              anoInput[typeField] = "number";
-              anoInput[namefield] = "" + ano;
-              nodeAnoInput = treeM.parse(anoInput);
-              node.addChild(nodeAnoInput);
-            }
+
+        SectirTreeFactory.prototype.reset = function() {
+          this.trees = {};
+          this.maxHeights = {};
+          return this.nodesById = {};
+        };
+
+        SectirTreeFactory.prototype.addTree = function(tree, namespace, namefield, typeField, anoComienzo, anoFinal) {
+          var treeParsed;
+          if (namespace == null) {
+            namespace = "default";
           }
-        });
-        this.trees[namespace] = treeParsed;
-        this.maxHeights[namespace] = void 0;
-        this.nodesById[namespace] = {};
-      };
-
-      SectirTreeFactory.prototype.getTreeHeight = function(namespace) {
-        var retVal;
-        if (namespace == null) {
-          namespace = "default";
-        }
-        if (this.maxHeights[namespace] != null) {
-          return this.maxHeights[namespace];
-        }
-        retVal = 0;
-        this.trees[namespace].walk(function(node) {
-          var level;
-          level = node.getPath().length;
-          if (level > retVal) {
-            retVal = level;
+          if (namefield == null) {
+            namefield = "name";
           }
-        });
-        return this.maxHeights[namespace] = retVal;
-      };
-
-      SectirTreeFactory.prototype.getNodeHeightById = function(id, namespace) {
-        var val;
-        if (namespace == null) {
-          namespace = "default";
-        }
-        val = this.getNodeById(id, namespace);
-        if (val) {
-          return val.getPath().length;
-        } else {
-          return false;
-        }
-      };
-
-      SectirTreeFactory.prototype.getNodeById = function(id, namespace) {
-        var retVal, _ref;
-        if (namespace == null) {
-          namespace = "default";
-        }
-        if (this.trees[namespace] == null) {
-          return false;
-        }
-        if (this.nodesById[namespace][id] != null) {
-          return this.nodesById[namespace][id];
-        }
-        id = String(id);
-        retVal = false;
-        if ((_ref = this.trees[namespace]) != null) {
-          _ref.walk(function(node) {
-            var modelId;
-            modelId = String(node.model.id);
-            if (modelId === id) {
-              retVal = node;
-              return false;
+          if (typeField == null) {
+            typeField = "type";
+          }
+          if (anoComienzo == null) {
+            anoComienzo = false;
+          }
+          if (anoFinal == null) {
+            anoFinal = false;
+          }
+          treeParsed = treeM.parse(tree);
+          treeParsed.walk(function(node) {
+            var ano, anoInput, nodeAnoInput, _i;
+            if (anoComienzo || anoFinal && node.model[typeField] === "ano") {
+              for (ano = _i = anoComienzo; _i <= anoFinal; ano = _i += 1) {
+                anoInput = {};
+                anoInput.id = "" + node.model.id + "-" + ano;
+                anoInput[typeField] = "number";
+                anoInput[namefield] = "" + ano;
+                nodeAnoInput = treeM.parse(anoInput);
+                node.addChild(nodeAnoInput);
+              }
             }
           });
-        }
-        return this.nodesById[namespace][id] = retVal;
-      };
-
-      SectirTreeFactory.prototype.hasChildren = function(node) {
-        return (node.children != null) && node.children.length > 0;
-      };
-
-      SectirTreeFactory.prototype.hasChildrenById = function(id, namespace) {
-        if (namespace == null) {
-          namespace = "default";
-        }
-        return this.hasChildren(this.getNodeById(id, namespace));
-      };
-
-      SectirTreeFactory.prototype.getLeafs = function(namespace, st) {
-        var retVal, self, strategy;
-        if (namespace == null) {
-          namespace = "default";
-        }
-        if (st == null) {
-          st = "breadth";
-        }
-        strategy = {
-          strategy: st
+          this.trees[namespace] = treeParsed;
+          this.maxHeights[namespace] = void 0;
+          this.nodesById[namespace] = {};
         };
-        self = this;
-        retVal = this.trees[namespace] != null ? this.trees[namespace].all(strategy, function(node) {
-          return !self.hasChildren(node);
-        }) : false;
-        return retVal;
-      };
 
-      SectirTreeFactory.prototype.getRows = function(namespace) {
-        var curLevel, retVal, self, strategy;
-        if (namespace == null) {
-          namespace = "default";
-        }
-        strategy = {
-          strategy: 'breadth'
+        SectirTreeFactory.prototype.getTreeHeight = function(namespace) {
+          var retVal;
+          if (namespace == null) {
+            namespace = "default";
+          }
+          if (this.maxHeights[namespace] != null) {
+            return this.maxHeights[namespace];
+          }
+          retVal = 0;
+          this.trees[namespace].walk(function(node) {
+            var level;
+            level = node.getPath().length;
+            if (level > retVal) {
+              retVal = level;
+            }
+          });
+          return this.maxHeights[namespace] = retVal;
         };
-        retVal = [];
-        curLevel = -1;
-        self = this;
-        this.trees[namespace].walk(strategy, function(node) {
-          var nodeHeight;
-          nodeHeight = self.getNodeHeightById(node.model.id, namespace);
-          if (nodeHeight !== curLevel) {
-            retVal.push([]);
-            curLevel = nodeHeight;
+
+        SectirTreeFactory.prototype.getNodeHeightById = function(id, namespace) {
+          var val;
+          if (namespace == null) {
+            namespace = "default";
           }
-          retVal[curLevel - 1].push(node);
-        });
-        return retVal;
-      };
-
-      SectirTreeFactory.prototype.getNodeLevelsFromMax = function(id, namespace) {
-        var node;
-        if (namespace == null) {
-          namespace = "default";
-        }
-        node = this.getNodeById(id, namespace);
-        if (node === false) {
-          return false;
-        }
-        return this.getTreeHeight(namespace) - node.getPath().length;
-      };
-
-      SectirTreeFactory.prototype.getNumberLeafsFromNode = function(id, namespace) {
-        var node, retVal, self;
-        if (namespace == null) {
-          namespace = "default";
-        }
-        node = this.getNodeById(id, namespace);
-        if (node === false) {
-          return false;
-        }
-        retVal = 0;
-        self = this;
-        node.walk(function(aNode) {
-          if (!self.hasChildren(aNode)) {
-            retVal++;
+          val = this.getNodeById(id, namespace);
+          if (val) {
+            return val.getPath().length;
+          } else {
+            return false;
           }
-        });
-        return retVal;
-      };
+        };
 
-      return SectirTreeFactory;
+        SectirTreeFactory.prototype.getNodeById = function(id, namespace) {
+          var retVal, _ref;
+          if (namespace == null) {
+            namespace = "default";
+          }
+          if (this.trees[namespace] == null) {
+            return false;
+          }
+          if (this.nodesById[namespace][id] != null) {
+            return this.nodesById[namespace][id];
+          }
+          id = String(id);
+          retVal = false;
+          if ((_ref = this.trees[namespace]) != null) {
+            _ref.walk(function(node) {
+              var modelId;
+              modelId = String(node.model.id);
+              if (modelId === id) {
+                retVal = node;
+                return false;
+              }
+            });
+          }
+          return this.nodesById[namespace][id] = retVal;
+        };
 
-    })());
+        SectirTreeFactory.prototype.hasChildren = function(node) {
+          return (node.children != null) && node.children.length > 0;
+        };
+
+        SectirTreeFactory.prototype.hasChildrenById = function(id, namespace) {
+          if (namespace == null) {
+            namespace = "default";
+          }
+          return this.hasChildren(this.getNodeById(id, namespace));
+        };
+
+        SectirTreeFactory.prototype.getLeafs = function(namespace, st) {
+          var retVal, self, strategy;
+          if (namespace == null) {
+            namespace = "default";
+          }
+          if (st == null) {
+            st = "breadth";
+          }
+          strategy = {
+            strategy: st
+          };
+          self = this;
+          retVal = this.trees[namespace] != null ? this.trees[namespace].all(strategy, function(node) {
+            return !self.hasChildren(node);
+          }) : false;
+          return retVal;
+        };
+
+        SectirTreeFactory.prototype.getRows = function(namespace) {
+          var curLevel, retVal, self, strategy;
+          if (namespace == null) {
+            namespace = "default";
+          }
+          strategy = {
+            strategy: 'breadth'
+          };
+          retVal = [];
+          curLevel = -1;
+          self = this;
+          this.trees[namespace].walk(strategy, function(node) {
+            var nodeHeight;
+            nodeHeight = self.getNodeHeightById(node.model.id, namespace);
+            if (nodeHeight !== curLevel) {
+              retVal.push([]);
+              curLevel = nodeHeight;
+            }
+            retVal[curLevel - 1].push(node);
+          });
+          return retVal;
+        };
+
+        SectirTreeFactory.prototype.getNodeLevelsFromMax = function(id, namespace) {
+          var node;
+          if (namespace == null) {
+            namespace = "default";
+          }
+          node = this.getNodeById(id, namespace);
+          if (node === false) {
+            return false;
+          }
+          return this.getTreeHeight(namespace) - node.getPath().length;
+        };
+
+        SectirTreeFactory.prototype.getNumberLeafsFromNode = function(id, namespace) {
+          var node, retVal, self;
+          if (namespace == null) {
+            namespace = "default";
+          }
+          node = this.getNodeById(id, namespace);
+          if (node === false) {
+            return false;
+          }
+          retVal = 0;
+          self = this;
+          node.walk(function(aNode) {
+            if (!self.hasChildren(aNode)) {
+              retVal++;
+            }
+          });
+          return retVal;
+        };
+
+        return SectirTreeFactory;
+
+      })());
+    }
+  ]);
+
+}).call(this);
+
+(function() {
+  angular.module('sectirTableModule.treeModelFactory', []).factory('treeModelFactory', function() {
+    return new TreeModel;
   });
 
 }).call(this);
