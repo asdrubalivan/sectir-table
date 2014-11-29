@@ -171,6 +171,25 @@ sectirPagerInput =
         }
     ]
 
+treeConAno =
+    {
+        id: 1
+        name: "nombre"
+        type: "text"
+        children:
+            [
+                {
+                    id: "1,1"
+                    name: "bla"
+                    type: "text"
+                }
+                {
+                    id: 2
+                    type: "ano"
+                }
+            ]
+    }
+
 exampleClick = ->
     alert "Me clickearon"
 
@@ -183,6 +202,7 @@ angular.module 'ExampleApp', ['sectirTableModule']
                 namespace1: tree1
                 namespace2: tree2
                 namespace3: treeWithSelect
+                namespace4: treeConAno
             }
             $scope.ctrlVars.inputs = inputVars
             #Voy a copiar lo que hay en inputVars["input1"]

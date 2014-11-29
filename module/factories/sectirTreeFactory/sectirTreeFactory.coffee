@@ -9,9 +9,21 @@ angular.module 'sectirTableModule.treeFactory', []
                 @trees = {}
                 @maxHeights = {}
                 @nodesById = {}
-            addTree: (tree, namespace="default") ->
+            addTree: (tree, namespace="default", namefield = "name" ,
+                typeField = "type", anoComienzo = 1200, anoFinal = 1207) ->
                 treeM = new TreeModel
-                @trees[namespace] = treeM.parse tree
+                treeParsed = treeM.parse tree
+                treeParsed.walk (node) ->
+                    if node.model[typeField] is "ano"
+                        for ano in [anoComienzo..anoFinal] by 1
+                            anoInput = {}
+                            anoInput.id = "#{node.model.id}-#{ano}"
+                            anoInput[typeField] = "number"
+                            anoInput[namefield] = "#{ano}"
+                            nodeAnoInput = treeM.parse anoInput
+                            node.addChild nodeAnoInput
+                    return
+                @trees[namespace] = treeParsed
                 @maxHeights[namespace] = undefined
                 @nodesById[namespace] = {}
                 return

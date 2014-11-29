@@ -301,7 +301,9 @@
         addlabel: "Add",
         addfieldlabel: "Add",
         subquestions: false,
-        subqenun: "enunciado"
+        subqenun: "enunciado",
+        anocomienzo: false,
+        anofinal: false
       };
       return {
         restrict: "EA",
@@ -317,7 +319,9 @@
           debugmodel: "=?",
           optionsfield: "=?",
           subquestions: "=?",
-          subqenun: "=?"
+          subqenun: "=?",
+          anocomienzo: "=?",
+          anofinal: "=?"
         },
         controller: [
           "$scope", function($scope) {
@@ -351,7 +355,7 @@
               }
             }
             haveSubQuestions = scope.haveSubQuestions();
-            sectirTreeFactory.addTree(scope.tabledata, scope.namespace);
+            sectirTreeFactory.addTree(scope.tabledata, scope.namespace, scope.typefield, scope.anocomienzo, scope.anofinal);
             rows = sectirTreeFactory.getRows(scope.namespace);
             remainingTable = element.find("table");
             if (angular.isElement(remainingTable)) {
@@ -593,13 +597,39 @@
         return this.nodesById = {};
       };
 
-      SectirTreeFactory.prototype.addTree = function(tree, namespace) {
-        var treeM;
+      SectirTreeFactory.prototype.addTree = function(tree, namespace, namefield, typeField, anoComienzo, anoFinal) {
+        var treeM, treeParsed;
         if (namespace == null) {
           namespace = "default";
         }
+        if (namefield == null) {
+          namefield = "name";
+        }
+        if (typeField == null) {
+          typeField = "type";
+        }
+        if (anoComienzo == null) {
+          anoComienzo = 1200;
+        }
+        if (anoFinal == null) {
+          anoFinal = 1207;
+        }
         treeM = new TreeModel;
-        this.trees[namespace] = treeM.parse(tree);
+        treeParsed = treeM.parse(tree);
+        treeParsed.walk(function(node) {
+          var ano, anoInput, nodeAnoInput, _i;
+          if (node.model[typeField] === "ano") {
+            for (ano = _i = anoComienzo; _i <= anoFinal; ano = _i += 1) {
+              anoInput = {};
+              anoInput.id = "" + node.model.id + "-" + ano;
+              anoInput[typeField] = "number";
+              anoInput[namefield] = "" + ano;
+              nodeAnoInput = treeM.parse(anoInput);
+              node.addChild(nodeAnoInput);
+            }
+          }
+        });
+        this.trees[namespace] = treeParsed;
         this.maxHeights[namespace] = void 0;
         this.nodesById[namespace] = {};
       };

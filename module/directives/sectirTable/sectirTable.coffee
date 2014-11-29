@@ -21,6 +21,8 @@ angular.module('sectirTableModule.table',
                 addfieldlabel: "Add"
                 subquestions: false
                 subqenun: "enunciado"
+                anocomienzo: false
+                anofinal: false
 
             {
                 restrict: "EA"
@@ -37,6 +39,8 @@ angular.module('sectirTableModule.table',
                     optionsfield: "=?"
                     subquestions: "=?"
                     subqenun: "=?"
+                    anocomienzo: "=?"
+                    anofinal: "=?"
                 controller: ["$scope", ($scope) ->
                         $scope.answersObject = {}
                         if not $scope.subquestions
@@ -58,8 +62,13 @@ angular.module('sectirTableModule.table',
                             if not angular.isDefined scope[key]
                                 scope[key] = value
                         haveSubQuestions = scope.haveSubQuestions()
-                        sectirTreeFactory.addTree(scope.tabledata,
-                            scope.namespace)
+                        sectirTreeFactory.addTree(
+                            scope.tabledata
+                            scope.namespace
+                            scope.typefield
+                            scope.anocomienzo
+                            scope.anofinal
+                        )
                         rows = sectirTreeFactory.getRows scope.namespace
                         remainingTable = element.find "table"
                         if angular.isElement remainingTable
