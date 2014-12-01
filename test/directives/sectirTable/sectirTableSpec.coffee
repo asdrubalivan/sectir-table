@@ -699,3 +699,135 @@ describe 'sectirTable', ->
                 lastRow.find("th").eq(6).find("span").text()
             expect(textAddFieldLabel).toEqual("Click para añadir")
             expect(textDeleteFieldLabel).toEqual("Click para borrar")
+    #Opc comp
+    describe 'opccomp', ->
+        beforeEach ->
+            @aTreeWithData =
+                {
+                    id: 1
+                    name: "Header"
+                    children:
+                        [
+                            {
+                                id: 2
+                                name: "A list"
+                                type: "select"
+                                options:
+                                    "ng-options": "o for o in [1, 3]"
+                            }
+                            {
+                                id: 3
+                                name: "Father of input"
+                                children:
+                                    [
+                                        {
+                                            id: "3a"
+                                            name: "Input"
+                                            type: "text"
+                                        }
+                                    ]
+                            }
+                        ]
+                }
+            @opcComp =
+                [
+                        {
+                            enunciado: "Mi enunciado 1"
+                            id: 1
+                        }
+                        {
+                            enunciado: "Mi segundo enunciado"
+                            id: 2
+                        }
+                        {
+                            enunciado: "Mi tercer enunciado"
+                            id: 3
+                        }
+                ]
+            @opcCompConOtroEnun =
+                [
+                        {
+                            enunciate: "Mi enunciado 1 (otro)"
+                            id: 4
+                        }
+                        {
+                            enunciate: "Mi segundo enunciado (otro)"
+                            id: 5
+                        }
+                        {
+                            enunciate: "Mi tercer enunciado (otro)"
+                            id: 6
+                        }
+                ]
+            @count = (expected, klass, elm) ->
+                rows = elm.find("th")
+                countRows = 0
+                angular.forEach rows, (value) ->
+                    el = angular.element value
+                    if el.hasClass klass
+                        countRows++
+                expect(countRows).toBe(expected)
+            @getTexts = (elm, klass) ->
+                txts = []
+                heads = elm.find "th"
+                angular.forEach heads, (value) ->
+                    el = angular.element value
+                    if el.hasClass klass
+                        txts.push(el.text())
+                    return
+                txts
+            @getAttrs = (elm, type, attr) ->
+                values = []
+                heads = elm.find "th"
+                angular.forEach heads, (value) ->
+                    el = angular.element value
+                    if el.hasClass "sectir-answer"
+                        inp = el.find "#{type}"
+                        if inp.length
+                            values.push(inp.attr(attr))
+                    return
+                values
+
+        it 'should show data ', ->
+            @$scope.tabledata = @aTreeWithData
+            @$scope.subq = @opcComp
+            @$scope.namespace = "namespace"
+            angEl = angular.element '''
+                <sectir-table
+                    tabledata="tabledata"
+                    namespace="namespace"
+                    subquestions = "subq"
+                    >
+                </sectir-table>
+            '''
+            elm = @$compile(angEl)(@$scope)
+            @count 1, "sectir-subq-title", elm
+            @count 3, "sectir-table-subq", elm
+            texts = @getTexts elm, "sectir-table-subq"
+            expect(texts).toEqual([
+                "Mi enunciado 1"
+                "Mi segundo enunciado"
+                "Mi tercer enunciado"
+            ])
+            selectModels = @getAttrs elm, "select", "ng-model"
+            expect(selectModels).toEqual([
+                "answersObject.values['2']['1']"
+                "answersObject.values['2']['2']"
+                "answersObject.values['2']['3']"
+            ])
+            inputModels = @getAttrs elm, "input", "ng-model"
+            expect(inputModels).toEqual([
+                "answersObject.values['3a']['1']"
+                "answersObject.values['3a']['2']"
+                "answersObject.values['3a']['3']"
+            ])
+            @$scope.subq = @opcCompConOtroEnun
+            @$scope.enunfield = "enunciate"
+            angEl.attr "subqenun", "enunfield"
+            elm = @$compile(angEl)(@$scope)
+            texts = @getTexts elm, "sectir-table-subq"
+            expect(texts).toEqual([
+                "Mi enunciado 1 (otro)"
+                "Mi segundo enunciado (otro)"
+                "Mi tercer enunciado (otro)"
+            ])

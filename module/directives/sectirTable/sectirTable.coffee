@@ -220,7 +220,6 @@ angular.module('sectirTableModule.table',
                                 addButton.append spanAdd
                                 rowRepeat.append addButton
                                 rowRepeat.append deleteButton
-                            #TODO se me ocurre poner el row repeat por acá
                             rowRepeat
                         if not haveSubQuestions
                             templateAnswers = templateAnswersFn()
