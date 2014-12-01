@@ -65,6 +65,7 @@ angular.module('sectirTableModule.table',
                         sectirTreeFactory.addTree(
                             scope.tabledata
                             scope.namespace
+                            scope.titlefield
                             scope.typefield
                             scope.anocomienzo
                             scope.anofinal

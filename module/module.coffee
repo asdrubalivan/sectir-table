@@ -6,4 +6,5 @@ angular.module 'sectirTableModule', [
     'sectirTableModule.input'
     'sectirTableModule.groupinput'
     'sectirTableModule.pager'
+    'sectirTableModule.treeModelFactory'
 ]

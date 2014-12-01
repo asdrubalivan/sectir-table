@@ -1,7 +1,7 @@
 describe 'sectirTreeFactory', ->
     sectirTreeFactory = undefined
     beforeEach(module('sectirTableModule'))
-
+    
     beforeEach(inject( (_sectirTreeFactory_)->
         sectirTreeFactory = _sectirTreeFactory_
     ))
@@ -351,3 +351,49 @@ describe 'sectirTreeFactory', ->
         expect(sectirTreeFactory.getNumberLeafsFromNode(10, "other"))
             .toBe(false)
         
+        describe 'Tests with category \'ano\'', ->
+            beforeEach ->
+                @treeM = new TreeModel
+                @treeConAno =
+                    {
+                        id: 1
+                        name: "Nombre"
+                        children:
+                            [
+                                {
+                                    id: 2
+                                    name: "Nombre 2"
+                                    type: "text"
+                                }
+                                {
+                                    id: 3
+                                    name: "Nombres con ano"
+                                    type: "ano"
+                                }
+                            ]
+                    }
+                @treeConAnoProc = angular.copy @treeConAno
+                @treeConAnoProc.children[1].children = []
+                #Añadimos valores con ano
+                for ano in [2010..2012]
+                    @treeConAnoProc
+                        .children[1]
+                        .children
+                        .push {
+                            id: "3-#{ano}"
+                            name: "#{ano}"
+                            type: "number"
+                        }
+                return
+            it 'should create nodes when encounter \'ano\'', ->
+                sectirTreeFactory.addTree(
+                    @treeConAno
+                    'treeconAno'
+                    'name'
+                    'type'
+                    2010
+                    2012
+                )
+                tree1 = sectirTreeFactory.trees.treeconAno
+                tree2 = @treeM.parse @treeConAnoProc
+                expect(tree1).toEqual(tree2)

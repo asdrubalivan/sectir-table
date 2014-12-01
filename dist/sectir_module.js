@@ -355,7 +355,7 @@
               }
             }
             haveSubQuestions = scope.haveSubQuestions();
-            sectirTreeFactory.addTree(scope.tabledata, scope.namespace, scope.typefield, scope.anocomienzo, scope.anofinal);
+            sectirTreeFactory.addTree(scope.tabledata, scope.namespace, scope.titlefield, scope.typefield, scope.anocomienzo, scope.anofinal);
             rows = sectirTreeFactory.getRows(scope.namespace);
             remainingTable = element.find("table");
             if (angular.isElement(remainingTable)) {
@@ -603,7 +603,7 @@
         };
 
         SectirTreeFactory.prototype.addTree = function(tree, namespace, namefield, typeField, anoComienzo, anoFinal) {
-          var treeParsed;
+          var ano, anoInput, n, nodeAnoInput, nodos, treeParsed, _i, _j, _len;
           if (namespace == null) {
             namespace = "default";
           }
@@ -620,19 +620,22 @@
             anoFinal = false;
           }
           treeParsed = treeM.parse(tree);
-          treeParsed.walk(function(node) {
-            var ano, anoInput, nodeAnoInput, _i;
-            if (anoComienzo || anoFinal && node.model[typeField] === "ano") {
-              for (ano = _i = anoComienzo; _i <= anoFinal; ano = _i += 1) {
+          if (anoComienzo || anoFinal) {
+            nodos = treeParsed.all(function(node) {
+              return node.model[typeField] === "ano";
+            });
+            for (_i = 0, _len = nodos.length; _i < _len; _i++) {
+              n = nodos[_i];
+              for (ano = _j = anoComienzo; _j <= anoFinal; ano = _j += 1) {
                 anoInput = {};
-                anoInput.id = "" + node.model.id + "-" + ano;
+                anoInput.id = "" + n.model.id + "-" + ano;
                 anoInput[typeField] = "number";
                 anoInput[namefield] = "" + ano;
                 nodeAnoInput = treeM.parse(anoInput);
-                node.addChild(nodeAnoInput);
+                n.addChild(nodeAnoInput);
               }
             }
-          });
+          }
           this.trees[namespace] = treeParsed;
           this.maxHeights[namespace] = void 0;
           this.nodesById[namespace] = {};
@@ -795,6 +798,6 @@
 }).call(this);
 
 (function() {
-  angular.module('sectirTableModule', ['sectirTableModule.table', 'sectirTableModule.input', 'sectirTableModule.groupinput', 'sectirTableModule.pager']);
+  angular.module('sectirTableModule', ['sectirTableModule.table', 'sectirTableModule.input', 'sectirTableModule.groupinput', 'sectirTableModule.pager', 'sectirTableModule.treeModelFactory']);
 
 }).call(this);

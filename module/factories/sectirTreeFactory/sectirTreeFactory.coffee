@@ -22,17 +22,17 @@ sectirTreeFactoryModule.factory 'sectirTreeFactory',[
                     anoComienzo = false,
                     anoFinal = false) ->
                     treeParsed = treeM.parse tree
-                    treeParsed.walk (node) ->
-                        if anoComienzo or anoFinal and \
-                        node.model[typeField] is "ano"
+                    if anoComienzo or anoFinal
+                        nodos = treeParsed.all (node) ->
+                            node.model[typeField] is "ano"
+                        for n in nodos
                             for ano in [anoComienzo..anoFinal] by 1
                                 anoInput = {}
-                                anoInput.id = "#{node.model.id}-#{ano}"
+                                anoInput.id = "#{n.model.id}-#{ano}"
                                 anoInput[typeField] = "number"
                                 anoInput[namefield] = "#{ano}"
                                 nodeAnoInput = treeM.parse anoInput
-                                node.addChild nodeAnoInput
-                        return
+                                n.addChild nodeAnoInput
                     @trees[namespace] = treeParsed
                     @maxHeights[namespace] = undefined
                     @nodesById[namespace] = {}
