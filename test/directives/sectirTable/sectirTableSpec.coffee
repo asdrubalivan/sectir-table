@@ -730,8 +730,53 @@ describe 'sectirTable', ->
                             values.push(inp.attr(attr))
                     return
                 values
-        describe 'opccomp', ->
+        describe 'ano', ->
+            beforeEach ->
+                @treeWithAno =
+                    {
+                        id: 1
+                        name: "a name"
+                        children:
+                            [
+                                {
+                                    id: 2
+                                    name: "Aqui viene el ano"
+                                    type: "ano"
+                                }
+                            ]
+                    }
 
+            it 'should show correct anos', ->
+                @$scope.tabledata = @treeWithAno
+                @$scope.namespace = "namespace"
+                @$scope.anoComienzo = 2000
+                @$scope.anoFinal = 2003
+                angEl = angular.element '''
+                    <sectir-table
+                        tabledata="tabledata"
+                        namespace="namespace"
+                        anocomienzo="anoComienzo"
+                        anofinal="anoFinal"
+                        >
+                    </sectir-table>
+                '''
+                elm = @$compile(angEl)(@$scope)
+                @$scope.$digest()
+                types = @getAttrs elm, "input", "type"
+                expect(types).toEqual([
+                    "number"
+                    "number"
+                    "number"
+                    "number"
+                ])
+                answers = @getAttrs elm, "input", "ng-model"
+                expect(answers).toEqual([
+                    "answersObject.values[$index]['2-2000']"
+                    "answersObject.values[$index]['2-2001']"
+                    "answersObject.values[$index]['2-2002']"
+                    "answersObject.values[$index]['2-2003']"
+                ])
+        describe 'opccomp', ->
             beforeEach ->
                 @aTreeWithData =
                     {
