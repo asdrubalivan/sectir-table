@@ -287,8 +287,8 @@
 }).call(this);
 
 (function() {
-  angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory', 'sectirTableModule.dataFactory']).directive('sectirTable', [
-    "sectirTreeFactory", "sectirDataFactory", "$compile", function(sectirTreeFactory, sectirDataFactory, $compile) {
+  angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory', 'sectirTableModule.treeModelFactory', 'sectirTableModule.dataFactory']).directive('sectirTable', [
+    "sectirTreeFactory", "sectirDataFactory", "treeModelFactory", "$compile", function(sectirTreeFactory, sectirDataFactory, treeModelFactory, $compile) {
       var defaultValues;
       defaultValues = {
         namespace: "default",
@@ -347,16 +347,28 @@
         link: function(scope, element, attrs, ctrl) {
           var linkFn, watchFn;
           linkFn = function() {
-            var elm, elmAdd, field, firstRow, haveSubQuestions, headers, key, ngModelRow, remainingTable, row, rows, rowspan, spanAddLabel, spanDeleteLabel, subQ, table, templateAnswers, templateAnswersFn, tr, trRows, treeHeight, val, value, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref;
+            var dropRefactorFn, elm, elmAdd, field, firstRow, forEachRefactorFn, haveSubQuestions, headers, key, ngModelRow, remainingTable, row, rows, rowspan, spanAddLabel, spanDeleteLabel, subQ, subQNodes, table, templateAnswers, templateAnswersFn, tr, trRows, treeHeight, treeToBeRefactored, val, value, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref;
             for (key in defaultValues) {
               value = defaultValues[key];
               if (!angular.isDefined(scope[key])) {
                 scope[key] = value;
               }
             }
-            haveSubQuestions = scope.haveSubQuestions();
             sectirTreeFactory.addTree(scope.tabledata, scope.namespace, scope.titlefield, scope.typefield, scope.anocomienzo, scope.anofinal);
+            treeToBeRefactored = sectirTreeFactory.trees[scope.namespace];
+            console.log(treeToBeRefactored);
+            subQNodes = [];
+            dropRefactorFn = function(node) {
+              return node.model[scope.typefield] === "subq";
+            };
+            forEachRefactorFn = function(node) {
+              node.drop();
+              return subQNodes.push(node);
+            };
+            treeToBeRefactored.all(dropRefactorFn).forEach(forEachRefactorFn);
             rows = sectirTreeFactory.getRows(scope.namespace);
+            haveSubQuestions = scope.haveSubQuestions() || subQNodes.length;
+            sectirTreeFactory.addTree(scope.tabledata, scope.namespace, scope.titlefield, scope.typefield, scope.anocomienzo, scope.anofinal);
             remainingTable = element.find("table");
             if (angular.isElement(remainingTable)) {
               remainingTable.remove();
