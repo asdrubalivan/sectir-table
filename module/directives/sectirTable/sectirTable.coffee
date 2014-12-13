@@ -63,13 +63,17 @@ angular.module('sectirTableModule.table',
                         for key, value of defaultValues
                             if not angular.isDefined scope[key]
                                 scope[key] = value
+                        # No mandamos Un año a la factory
+                        # ya que no queremos que la misma
+                        # cree los nodos con las respuestas
+                        # para los años
                         sectirTreeFactory.addTree(
                             scope.tabledata
                             scope.namespace
                             scope.titlefield
                             scope.typefield
-                            scope.anocomienzo
-                            scope.anofinal
+                            #scope.anocomienzo
+                            #scope.anofinal
                         )
                         treeToBeRefactored = sectirTreeFactory
                             .trees[scope.namespace]
@@ -79,7 +83,7 @@ angular.module('sectirTableModule.table',
                             node.model[scope.typefield] is "subq"
                         forEachRefactorFn = (node) ->
                             node.drop()
-                            subQNodes.concat node.model.subq
+                            subQNodes = subQNodes.concat node.model.subq
                         treeToBeRefactored
                             .all(dropRefactorFn)
                             .forEach(forEachRefactorFn)

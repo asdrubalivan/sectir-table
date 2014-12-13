@@ -354,7 +354,7 @@
                 scope[key] = value;
               }
             }
-            sectirTreeFactory.addTree(scope.tabledata, scope.namespace, scope.titlefield, scope.typefield, scope.anocomienzo, scope.anofinal);
+            sectirTreeFactory.addTree(scope.tabledata, scope.namespace, scope.titlefield, scope.typefield);
             treeToBeRefactored = sectirTreeFactory.trees[scope.namespace];
             console.log(treeToBeRefactored);
             subQNodes = [];
@@ -363,7 +363,7 @@
             };
             forEachRefactorFn = function(node) {
               node.drop();
-              return subQNodes.concat(node.model.subq);
+              return subQNodes = subQNodes.concat(node.model.subq);
             };
             treeToBeRefactored.all(dropRefactorFn).forEach(forEachRefactorFn);
             if (subQNodes.length) {
