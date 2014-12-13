@@ -366,6 +366,9 @@
               return subQNodes.concat(node.model.subq);
             };
             treeToBeRefactored.all(dropRefactorFn).forEach(forEachRefactorFn);
+            if (subQNodes.length) {
+              scope.subquestions = subQNodes;
+            }
             rows = sectirTreeFactory.getRows(scope.namespace);
             haveSubQuestions = scope.haveSubQuestions() || subQNodes.length;
             sectirTreeFactory.addTree(scope.tabledata, scope.namespace, scope.titlefield, scope.typefield, scope.anocomienzo, scope.anofinal);

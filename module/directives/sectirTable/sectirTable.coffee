@@ -83,6 +83,8 @@ angular.module('sectirTableModule.table',
                         treeToBeRefactored
                             .all(dropRefactorFn)
                             .forEach(forEachRefactorFn)
+                        if subQNodes.length
+                            scope.subquestions = subQNodes
                         rows = sectirTreeFactory.getRows scope.namespace
                         haveSubQuestions = scope.haveSubQuestions()\
                             or subQNodes.length
