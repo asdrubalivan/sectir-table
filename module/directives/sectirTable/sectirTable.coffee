@@ -1,14 +1,16 @@
 angular.module('sectirTableModule.table',
     [
         'sectirTableModule.treeFactory'
+        'sectirTableModule.treeModelFactory'
         'sectirTableModule.dataFactory'
     ]
 )
     .directive 'sectirTable', [
         "sectirTreeFactory"
         "sectirDataFactory"
+        "treeModelFactory"
         "$compile"
-        (sectirTreeFactory, sectirDataFactory, $compile) ->
+        (sectirTreeFactory, sectirDataFactory, treeModelFactory , $compile) ->
             defaultValues =
                 namespace: "default"
                 deletefieldlabel: "Delete"
@@ -61,7 +63,6 @@ angular.module('sectirTableModule.table',
                         for key, value of defaultValues
                             if not angular.isDefined scope[key]
                                 scope[key] = value
-                        haveSubQuestions = scope.haveSubQuestions()
                         sectirTreeFactory.addTree(
                             scope.tabledata
                             scope.namespace
@@ -70,7 +71,29 @@ angular.module('sectirTableModule.table',
                             scope.anocomienzo
                             scope.anofinal
                         )
+                        treeToBeRefactored = sectirTreeFactory
+                            .trees[scope.namespace]
+                        console.log treeToBeRefactored
+                        subQNodes = []
+                        dropRefactorFn = (node) ->
+                            node.model[scope.typefield] is "subq"
+                        forEachRefactorFn = (node) ->
+                            node.drop()
+                            subQNodes.push node
+                        treeToBeRefactored
+                            .all(dropRefactorFn)
+                            .forEach(forEachRefactorFn)
                         rows = sectirTreeFactory.getRows scope.namespace
+                        haveSubQuestions = scope.haveSubQuestions()\
+                            or subQNodes.length
+                        sectirTreeFactory.addTree(
+                            scope.tabledata
+                            scope.namespace
+                            scope.titlefield
+                            scope.typefield
+                            scope.anocomienzo
+                            scope.anofinal
+                        )
                         remainingTable = element.find "table"
                         if angular.isElement remainingTable
                             remainingTable.remove()
