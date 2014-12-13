@@ -363,7 +363,7 @@
             };
             forEachRefactorFn = function(node) {
               node.drop();
-              return subQNodes.push(node);
+              return subQNodes.concat(node.model.subq);
             };
             treeToBeRefactored.all(dropRefactorFn).forEach(forEachRefactorFn);
             rows = sectirTreeFactory.getRows(scope.namespace);

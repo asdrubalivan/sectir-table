@@ -79,7 +79,7 @@ angular.module('sectirTableModule.table',
                             node.model[scope.typefield] is "subq"
                         forEachRefactorFn = (node) ->
                             node.drop()
-                            subQNodes.push node
+                            subQNodes.concat node.model.subq
                         treeToBeRefactored
                             .all(dropRefactorFn)
                             .forEach(forEachRefactorFn)
