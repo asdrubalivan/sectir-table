@@ -326,7 +326,7 @@
         controller: [
           "$scope", function($scope) {
             $scope.answersObject = {};
-            if (!$scope.subquestions) {
+            if (!$scope.subquestions || !($scope.anocomienzo && $scope.anofinal)) {
               $scope.answersObject.values = [];
             }
             $scope.addAnswer = function() {
