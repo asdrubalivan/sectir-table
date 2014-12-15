@@ -89,7 +89,6 @@ angular.module('sectirTableModule.table',
                             .forEach(forEachRefactorFn)
                         if subQNodes.length
                             scope.subquestions = subQNodes
-                        rows = sectirTreeFactory.getRows scope.namespace
                         haveSubQuestions = scope.haveSubQuestions()\
                             or subQNodes.length
                         sectirTreeFactory.addTree(
@@ -100,6 +99,7 @@ angular.module('sectirTableModule.table',
                             scope.anocomienzo
                             scope.anofinal
                         )
+                        rows = sectirTreeFactory.getRows scope.namespace
                         remainingTable = element.find "table"
                         if angular.isElement remainingTable
                             remainingTable.remove()

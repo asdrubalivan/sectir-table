@@ -369,9 +369,9 @@
             if (subQNodes.length) {
               scope.subquestions = subQNodes;
             }
-            rows = sectirTreeFactory.getRows(scope.namespace);
             haveSubQuestions = scope.haveSubQuestions() || subQNodes.length;
             sectirTreeFactory.addTree(scope.tabledata, scope.namespace, scope.titlefield, scope.typefield, scope.anocomienzo, scope.anofinal);
+            rows = sectirTreeFactory.getRows(scope.namespace);
             remainingTable = element.find("table");
             if (angular.isElement(remainingTable)) {
               remainingTable.remove();

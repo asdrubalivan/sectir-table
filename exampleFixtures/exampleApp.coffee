@@ -202,8 +202,11 @@ angular.module 'ExampleApp', ['sectirTableModule']
                 namespace1: tree1
                 namespace2: tree2
                 namespace3: treeWithSelect
-                namespace4: treeConAno
             }
+            $scope.treeConAno = treeConAno
+            $scope.namespaceAno = "namespace_ano"
+            $scope.anocomienzo = 2010
+            $scope.anofinal = 2013
             $scope.ctrlVars.inputs = inputVars
             #Voy a copiar lo que hay en inputVars["input1"]
             $scope.ctrlVars.grouptableinputs = {}
