@@ -45,11 +45,10 @@ angular.module('sectirTableModule.table',
                     anofinal: "=?"
                 controller: ["$scope", ($scope) ->
                         $scope.answersObject = {}
-                        if not $scope.subquestions or not (
-                            $scope.anocomienzo\
-                            and $scope.anofinal
-                        )
+                        if not $scope.subquestions
                             $scope.answersObject.values = []
+                        else
+                            $scope.answersObject.values = {}
                         $scope.addAnswer = ->
                             $scope.answersObject.values.push {}
                         $scope.deleteAnswer = (index) ->

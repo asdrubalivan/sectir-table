@@ -326,8 +326,10 @@
         controller: [
           "$scope", function($scope) {
             $scope.answersObject = {};
-            if (!$scope.subquestions || !($scope.anocomienzo && $scope.anofinal)) {
+            if (!$scope.subquestions) {
               $scope.answersObject.values = [];
+            } else {
+              $scope.answersObject.values = {};
             }
             $scope.addAnswer = function() {
               return $scope.answersObject.values.push({});
