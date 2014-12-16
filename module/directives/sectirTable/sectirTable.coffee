@@ -50,7 +50,7 @@ angular.module('sectirTableModule.table',
                         $scope.answersObject = {}
                         $scope.needObject = ->
                             subQFn = (node) ->
-                                $scope[$scope.typefield] is "ano"
+                                node[$scope.typefield] is "ano"
                             aTree = treeModelFactory.parse(
                                 $scope.tabledata
                             )
@@ -58,11 +58,14 @@ angular.module('sectirTableModule.table',
                             $scope.subquestions instanceof Array or
                                 first
                         if not $scope.needObject()
+                            $scope.answersIsArray = true
                             $scope.answersObject.values = []
                         else
+                            $scope.answersIsArray = false
                             $scope.answersObject.values = {}
                         $scope.addAnswer = ->
-                            $scope.answersObject.values.push {}
+                            if $scope.answersIsArray
+                                $scope.answersObject.values.push {}
                         $scope.deleteAnswer = (index) ->
                             $scope.answersObject.values.splice index, 1
                             if $scope.answersObject.values.length < 1

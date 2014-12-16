@@ -336,19 +336,23 @@
             $scope.needObject = function() {
               var aTree, first, subQFn;
               subQFn = function(node) {
-                return $scope[$scope.typefield] === "ano";
+                return node[$scope.typefield] === "ano";
               };
               aTree = treeModelFactory.parse($scope.tabledata);
               first = aTree.first(subQFn);
               return $scope.subquestions instanceof Array || first;
             };
             if (!$scope.needObject()) {
+              $scope.answersIsArray = true;
               $scope.answersObject.values = [];
             } else {
+              $scope.answersIsArray = false;
               $scope.answersObject.values = {};
             }
             $scope.addAnswer = function() {
-              return $scope.answersObject.values.push({});
+              if ($scope.answersIsArray) {
+                return $scope.answersObject.values.push({});
+              }
             };
             $scope.deleteAnswer = function(index) {
               $scope.answersObject.values.splice(index, 1);
