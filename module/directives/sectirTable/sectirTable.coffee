@@ -47,10 +47,12 @@ angular.module('sectirTableModule.table',
                         for key, value of defaultValues
                             if not angular.isDefined $scope[key]
                                 $scope[key] = value
+                        #TODO Revisar Porque se esta necesitando
+                        #un array en lugar de un objeto aquí
                         $scope.answersObject = {}
                         $scope.needObject = ->
                             subQFn = (node) ->
-                                node[$scope.typefield] is "ano"
+                               node.model[$scope.typefield] is "subq"
                             aTree = treeModelFactory.parse(
                                 $scope.tabledata
                             )

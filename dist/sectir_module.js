@@ -336,7 +336,7 @@
             $scope.needObject = function() {
               var aTree, first, subQFn;
               subQFn = function(node) {
-                return node[$scope.typefield] === "ano";
+                return node.model[$scope.typefield] === "subq";
               };
               aTree = treeModelFactory.parse($scope.tabledata);
               first = aTree.first(subQFn);
