@@ -47,8 +47,6 @@ angular.module('sectirTableModule.table',
                         for key, value of defaultValues
                             if not angular.isDefined $scope[key]
                                 $scope[key] = value
-                        #TODO Revisar Porque se esta necesitando
-                        #un array en lugar de un objeto aquí
                         $scope.answersObject = {}
                         $scope.needObject = ->
                             subQFn = (node) ->
@@ -61,9 +59,11 @@ angular.module('sectirTableModule.table',
                                 first
                         if not $scope.needObject()
                             $scope.answersIsArray = true
+                            $scope.answersObject.hasSubQ = false
                             $scope.answersObject.values = []
                         else
                             $scope.answersIsArray = false
+                            $scope.answersObject.hasSubQ = true
                             $scope.answersObject.values = {}
                         $scope.addAnswer = ->
                             if $scope.answersIsArray

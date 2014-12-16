@@ -344,9 +344,11 @@
             };
             if (!$scope.needObject()) {
               $scope.answersIsArray = true;
+              $scope.answersObject.hasSubQ = false;
               $scope.answersObject.values = [];
             } else {
               $scope.answersIsArray = false;
+              $scope.answersObject.hasSubQ = true;
               $scope.answersObject.values = {};
             }
             $scope.addAnswer = function() {
