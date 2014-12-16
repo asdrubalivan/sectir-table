@@ -44,8 +44,20 @@ angular.module('sectirTableModule.table',
                     anocomienzo: "=?"
                     anofinal: "=?"
                 controller: ["$scope", ($scope) ->
+                        for key, value of defaultValues
+                            if not angular.isDefined $scope[key]
+                                $scope[key] = value
                         $scope.answersObject = {}
-                        if not $scope.subquestions
+                        $scope.needObject = ->
+                            subQFn = (node) ->
+                                $scope[$scope.typefield] is "ano"
+                            aTree = treeModelFactory.parse(
+                                $scope.tabledata
+                            )
+                            first = aTree.first subQFn
+                            $scope.subquestions instanceof Array or
+                                first
+                        if not $scope.needObject()
                             $scope.answersObject.values = []
                         else
                             $scope.answersObject.values = {}
@@ -55,16 +67,11 @@ angular.module('sectirTableModule.table',
                             $scope.answersObject.values.splice index, 1
                             if $scope.answersObject.values.length < 1
                                 $scope.addAnswer()
-                        $scope.haveSubQuestions = ->
-                            $scope.subquestions instanceof Array
                         $scope.subqtitle = "Opciones"
 
                 ]
                 link: (scope, element, attrs, ctrl) ->
                     linkFn = ->
-                        for key, value of defaultValues
-                            if not angular.isDefined scope[key]
-                                scope[key] = value
                         # No mandamos Un año a la factory
                         # ya que no queremos que la misma
                         # cree los nodos con las respuestas
@@ -91,8 +98,8 @@ angular.module('sectirTableModule.table',
                             .forEach(forEachRefactorFn)
                         if subQNodes.length
                             scope.subquestions = subQNodes
-                        haveSubQuestions = scope.haveSubQuestions()\
-                            or subQNodes.length
+                        haveSubQuestions = scope.subquestions\
+                        or subQNodes.length
                         sectirTreeFactory.addTree(
                             scope.tabledata
                             scope.namespace
