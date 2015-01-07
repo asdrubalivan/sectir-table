@@ -1,6 +1,7 @@
 angular.module('sectirTableModule.input',
     [
         'sectirTableModule.dataFactory'
+        'ngTagsInput'
     ]
 )
     .directive 'sectirInput', [
@@ -39,10 +40,13 @@ angular.module('sectirTableModule.input',
                             elmName = angular.element "<div>"
                             elmName.addClass "sectir-input-namefield"
                             elmName.text val[scope.namefield]
-                            type = if val[scope.typefield] is "select"
-                                "select"
-                            else
-                                "input"
+                            type = switch val[scope.typefield]
+                                when "select"
+                                    "select"
+                                when "tag-input", "tags-input"
+                                    "tags-input"
+                                else
+                                    "input"
                             divInput = angular.element "<div>"
                             divInput.addClass "sectir-input-input"
                             elm = angular.element "<#{type}>"

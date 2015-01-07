@@ -3,6 +3,7 @@ angular.module('sectirTableModule.table',
         'sectirTableModule.treeFactory'
         'sectirTableModule.treeModelFactory'
         'sectirTableModule.dataFactory'
+        'ngTagsInput'
     ]
 )
     .directive 'sectirTable', [
@@ -222,12 +223,19 @@ angular.module('sectirTableModule.table',
                                     typefieldDefined = angular.isDefined(
                                         l.model[scope.typefield]
                                     )
-                                    if typefieldDefined \
-                                            and l.model[scope.typefield]\
-                                            is "select"
-                                        input = angular.element "<select>"
+                                    if typefieldDefined
+                                        switch l.model[scope.typefield]
+                                            when "select"
+                                                input = angular.element(
+                                                    "<select>")
+                                            when "tag-input", "tags-input"
+                                                input = angular.element(
+                                                    "<tags-input>")
+                                            else
+                                                input = angular.element(
+                                                    "<input>")
                                     else
-                                        input = angular.element "<input>"
+                                        input = angular.element("<input>")
                                     input.attr "ng-model", rowModel
                                     if typefieldDefined
                                         input.attr "type",\

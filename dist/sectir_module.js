@@ -1,5 +1,5 @@
 (function() {
-  angular.module('sectirTableModule.groupinput', ['sectirTableModule.dataFactory']).directive('sectirGroupInput', [
+  angular.module('sectirTableModule.groupinput', ['sectirTableModule.dataFactory', 'ngTagsInput']).directive('sectirGroupInput', [
     "sectirDataFactory", "$compile", function(sectirDataFactory, $compile) {
       var defaultValues;
       defaultValues = {
@@ -42,7 +42,17 @@
               elmName = angular.element("<td>");
               elmName.addClass("sectir-groupinput-namefield");
               elmName.text(val[scope.namefield]);
-              type = val[scope.typefield] === "select" ? "select" : "input";
+              type = (function() {
+                switch (val[scope.typefield]) {
+                  case "select":
+                    return "select";
+                  case "tag-input":
+                  case "tags-input":
+                    return "tags-input";
+                  default:
+                    return "input";
+                }
+              })();
               elm = angular.element("<" + type + ">");
               if (type === "input") {
                 elm.attr("type", val[scope.typefield]);
@@ -83,7 +93,7 @@
 }).call(this);
 
 (function() {
-  angular.module('sectirTableModule.input', ['sectirTableModule.dataFactory']).directive('sectirInput', [
+  angular.module('sectirTableModule.input', ['sectirTableModule.dataFactory', 'ngTagsInput']).directive('sectirInput', [
     "sectirDataFactory", "$compile", function(sectirDataFactory, $compile) {
       var defaultValues;
       defaultValues = {
@@ -124,7 +134,17 @@
               elmName = angular.element("<div>");
               elmName.addClass("sectir-input-namefield");
               elmName.text(val[scope.namefield]);
-              type = val[scope.typefield] === "select" ? "select" : "input";
+              type = (function() {
+                switch (val[scope.typefield]) {
+                  case "select":
+                    return "select";
+                  case "tag-input":
+                  case "tags-input":
+                    return "tags-input";
+                  default:
+                    return "input";
+                }
+              })();
               divInput = angular.element("<div>");
               divInput.addClass("sectir-input-input");
               elm = angular.element("<" + type + ">");
@@ -287,7 +307,7 @@
 }).call(this);
 
 (function() {
-  angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory', 'sectirTableModule.treeModelFactory', 'sectirTableModule.dataFactory']).directive('sectirTable', [
+  angular.module('sectirTableModule.table', ['sectirTableModule.treeFactory', 'sectirTableModule.treeModelFactory', 'sectirTableModule.dataFactory', 'ngTagsInput']).directive('sectirTable', [
     "sectirTreeFactory", "sectirDataFactory", "treeModelFactory", "$compile", function(sectirTreeFactory, sectirDataFactory, treeModelFactory, $compile) {
       var defaultValues;
       defaultValues = {
@@ -502,8 +522,18 @@
                     rowModel = ngModelRow(l.model.id, subQuestion.id);
                   }
                   typefieldDefined = angular.isDefined(l.model[scope.typefield]);
-                  if (typefieldDefined && l.model[scope.typefield] === "select") {
-                    input = angular.element("<select>");
+                  if (typefieldDefined) {
+                    switch (l.model[scope.typefield]) {
+                      case "select":
+                        input = angular.element("<select>");
+                        break;
+                      case "tag-input":
+                      case "tags-input":
+                        input = angular.element("<tags-input>");
+                        break;
+                      default:
+                        input = angular.element("<input>");
+                    }
                   } else {
                     input = angular.element("<input>");
                   }
