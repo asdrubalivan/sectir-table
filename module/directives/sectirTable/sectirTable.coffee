@@ -122,7 +122,7 @@ angular.module('sectirTableModule.table',
                         table.addClass "sectir-table"
                         firstRow = true
                         trRows = []
-                        for row in rows
+                        for row, ix in rows
                             headers = []
                             tr = angular.element "<tr>"
                             tr.addClass "sectir-table-header"
@@ -167,17 +167,17 @@ angular.module('sectirTableModule.table',
                                     elmAdd.attr "rowspan", treeHeight
                                     headers.push elmAdd
                                     headers.push elm
-                                else
-                                    elm = angular.element "<th>"
-                                    elm.addClass "sectir-subq-title"
-                                    elm.text "{{subqtitle}}"
-                                    elm.attr "colspan", 1
-                                    elm.attr "rowspan", treeHeight
-                                    #No podemos hacer push como arriba
-                                    #ya que tenemos que agregar los elementos
-                                    #al inicio
-                                    #y no al final
-                                    headers.unshift elm
+                            if (ix is rows.length - 1) and haveSubQuestions
+                                elm = angular.element "<th>"
+                                elm.addClass "sectir-subq-title"
+                                elm.text "{{subqtitle}}"
+                                elm.attr "colspan", 1
+                                elm.attr "rowspan", 1
+                                #No podemos hacer push como arriba
+                                #ya que tenemos que agregar los elementos
+                                #al inicio
+                                #y no al final
+                                headers.unshift elm
                             for val in headers
                                 tr.append val
                             trRows.push tr
